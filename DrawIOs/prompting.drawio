@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.1">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3">
   <diagram name="Page-1" id="Z5_-aFUJuA9duvFPhsF1">
-    <mxGraphModel dx="989" dy="514" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -21,7 +21,7 @@
         <mxCell id="tLiYIg1hAG5-3rMSmf7M-19" value="performs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontStyle=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontSize=8;strokeWidth=0.5;" parent="1" source="tLiYIg1hAG5-3rMSmf7M-21" target="tLiYIg1hAG5-3rMSmf7M-58" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-10" value="has knowldege about" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;textDirection=vertical-lr;fontSize=8;strokeColor=default;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;fontStyle=2;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="tLiYIg1hAG5-3rMSmf7M-21" target="tLiYIg1hAG5-3rMSmf7M-94">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-10" value="has knowldege about" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;textDirection=vertical-lr;fontSize=8;strokeColor=default;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;fontStyle=2;labelBackgroundColor=default;endArrow=classic;" parent="1" source="tLiYIg1hAG5-3rMSmf7M-21" target="tLiYIg1hAG5-3rMSmf7M-94" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="400" y="460" />
@@ -358,25 +358,25 @@
         <mxCell id="m_tKtK9dRIFQRdfaqVs3-9" value="Identifier les propriétés d&#39;intérêt sur&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="795" y="110" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-1" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify constraints on input data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-1" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify constraints on input data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" parent="1" vertex="1">
           <mxGeometry x="975" y="120" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-2" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify input and output data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;fillColor=default;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-2" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify input and output data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;fillColor=default;" parent="1" vertex="1">
           <mxGeometry x="1080" y="160" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-3" value="Les propriétés d&#39;intérêt déterminent l&#39;expertise requise" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;strokeColor=#d6b656;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=7;fontColor=default;fillColor=#fff2cc;size=20;position=0.24;position2=0.24;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-3" value="Les propriétés d&#39;intérêt déterminent l&#39;expertise requise" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;strokeColor=#d6b656;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=7;fontColor=default;fillColor=#fff2cc;size=20;position=0.24;position2=0.24;" parent="1" vertex="1">
           <mxGeometry x="920" y="210" width="66" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-4" value="&lt;span style=&quot;text-align: right;&quot;&gt;Build the fonctional chain&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-4" value="&lt;span style=&quot;text-align: right;&quot;&gt;Build the fonctional chain&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" parent="1" vertex="1">
           <mxGeometry x="1080" y="120" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-5" value="Nécessaire pour propager les contraintes, et concomitante avec la décomposition fonctionnelle" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;strokeColor=#d6b656;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=7;fontColor=default;fillColor=#fff2cc;size=20;position=0.24;position2=0.24;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-5" value="Nécessaire pour propager les contraintes, et concomitante avec la décomposition fonctionnelle" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;strokeColor=#d6b656;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=7;fontColor=default;fillColor=#fff2cc;size=20;position=0.24;position2=0.24;" parent="1" vertex="1">
           <mxGeometry x="1130" y="70" width="90" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-6" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify constraints on output data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-6" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify constraints on output data&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" parent="1" vertex="1">
           <mxGeometry x="975" y="160" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-9" value="related to" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=8;fontColor=default;fontStyle=2;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="DMlMxsVQOJTG3V4bMgdd-7" target="tLiYIg1hAG5-3rMSmf7M-94">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-9" value="related to" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=8;fontColor=default;fontStyle=2;labelBackgroundColor=default;endArrow=classic;" parent="1" source="DMlMxsVQOJTG3V4bMgdd-7" target="tLiYIg1hAG5-3rMSmf7M-94" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="895" y="220" />
@@ -384,11 +384,14 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-7" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify properties of interest&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-7" value="&lt;span style=&quot;text-align: right;&quot;&gt;Identify properties of interest&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" parent="1" vertex="1">
           <mxGeometry x="850" y="160" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMlMxsVQOJTG3V4bMgdd-8" value="&lt;span style=&quot;text-align: right;&quot;&gt;Propagate constraints from/to environment&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" vertex="1" parent="1">
+        <mxCell id="DMlMxsVQOJTG3V4bMgdd-8" value="&lt;span style=&quot;text-align: right;&quot;&gt;Propagate constraints from/to environment&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;strokeWidth=0.5;" parent="1" vertex="1">
           <mxGeometry x="747" y="160" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5MOmHKv4mUL2_Rcombu4-1" value="Problématique des interfaces" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;strokeColor=#d6b656;strokeWidth=0.5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=7;fontColor=default;fillColor=#fff2cc;size=20;position=0.24;position2=0.24;" vertex="1" parent="1">
+          <mxGeometry x="590" y="80" width="90" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
