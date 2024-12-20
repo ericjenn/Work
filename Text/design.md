@@ -1,44 +1,61 @@
 
+*Je ne distingue pas la nature de la fonction, qu'elle relève du service rendu par le système ou des contraintes que le système doit assurer. Je m'intéresse à une fonction racine (fonction "mère") quelconque. Il faudrait sans doute raffiner tout cela en fonction de la natur de la fonction.*
 
+*Je n'ai pas appliqué de méthode particulière (méthode d'analyse classique) car je n'en ai pas en tête. J'ai simplement retranscrit quelques idées et principes. Je pense qu'il faudrait à terme présenter les choses de façon plus ordonnée et rigoureuse, mais (i) les questions qui suivent sont à mon sens toutes pertinentes et (ii) c'est un travail de réorganisation que l'on pourra faire dans une deuxième phase.*  
+
+# Activités préliminaires
+
+*Je mentionne ici les activités préalables à la réalisation du travail d'analyse fonctionnelle proprement dit.*
 
 ## 1.a - Validation des données du problème
 
-- **L'exigence est-elle bien formulée** (cf. section "validation d'exigence" ci-après )
-- **L'ensemble des contraintes est-il bien (complètement) défini?**
-    **- Y a-t-il des contraintes de développement?** (choix de technologies, de méthodes, de langages, etc.)
+- **L'exigence est-elle bien formulée?** (cf. section "validation d'exigence" plus bas)
+- **L'exigence prend-elle explicitement en compte les situations de défaillance, de conditions environnementales hors limites?**
+- **Les conditions de début et de fin de la fonction sont-elles définies?**
+  > Quand est-ce que commence le tracking du visiteur?
+- **Si la réalisation de la fonction dépend intrinsèquement de propriétés de l'environnement, ces propriétés sont-elles exprimées?**\
+  - *Par exemple, la fonction de suivi d'une personne dépend directement de la personne, de sa présence, de son mouvement. A-t-on caractérisé cette personne du point de vue de sa vitesse de déplacement (qui est directement liée à la capacité de tracking puisque "tracker" la personne revient à maintenir une distance en faisant varier la vitesse relative du robot et du visiteur...).*
+- **L'ensemble des contraintes non fonctionnelles applicables au système qui réalisera la fonction ou au processus de développement de ce système est-il complètement défini?**\
+*Certaines de ces contraintes peuvent déterminer le choix de la décomposition fonctionnelle...*
+    - **Quelles sont les contraintes de développement applicables?** (choix de technologies, de méthodes, de langages, etc.)
     - **Quels sont les référentiels internes applicables?**
     - **Quelles sont les contraintes règlementaires, de certification, applicables?**
-    - **Quels sont les référentiels applicables (DO, ARP, ECSS, ISO, etc.)?**
-    - **Quel est le niveau de certification (par ex. DAL) requis?**\
-        *Ce niveau va déterminer ou éliminer certaines solutions... Par ex. si on parle d'un système DAL A, cela éliminera les algos à base d'IA. Si le système est DAL C, cela autorisera l'usage des algorithme d'IA, mais cette IA ne pourra pas s'exécuter sur un GPU, par ex.
-        Plus généralement, il va déterminer certains objectifs à atteindre et activités à mener. Ainsi, un niveau de développement "DAL A" en aéronautique va pratiquement éiminer la possibilité d'utiliser des composants logiciels sur étagère  et, dans tous les cas, va conduire à utiliser des solutions "simples" pour pouvoir réaliser ces activités à un coût raisonnable. Par exemple, certaines méthodes formelles qui permettent d'assurer un très haut niveau d'assurance ne peuvent être appliquées sur du logiciel trop complexe... ou, à l'inverse, certaines méthodes formelles imposent des langages informatiques particulier (par ex. SCADE) qui ne sont vraiment applicables que pour certains types d'algorithmes. *
-
-*On ne s'attend pas à ce  que les choses soient complète et parfaite au départ de l'activité. Des questions vont nécessairement se poser au cours du développement, des précisions vont être requises, etc. C'est normal. On n'attend surtout pas que les choses soient "parfaites" avant de commencer le travail. Il s'agit d'un processus plutôt itératif ou la "boucle d'asservissement" qui cherche à faire converger le système de développement vers la meilleure solution doit être la plus courte possible.*
+    - **Quels sont les normes applicables (DO, ARP, ECSS, ISO, etc.)?**
+      - **Quel est le niveau de certification (par ex. DAL) requis?**\
+        *Ce niveau va imposer ou éliminer certaines solutions... Par ex. si on parle d'un système DAL A, cela éliminera les algos à base d'IA. Si le système est DAL C, cela autorisera l'usage des algorithme d'IA, mais cette IA ne pourra pas s'exécuter sur un GPU, par ex.
+        Plus généralement, il va déterminer certains objectifs à atteindre et activités à mener. Ainsi, un niveau de développement "DAL A" en aéronautique va pratiquement éiminer la possibilité d'utiliser des composants logiciels sur étagère  et, dans tous les cas, va conduire à utiliser des solutions "simples" pour pouvoir réaliser ces activités à un coût raisonnable. Par exemple, certaines méthodes formelles qui permettent d'assurer un très haut niveau d'assurance ne peuvent être appliquées sur du logiciel trop complexe... ou, à l'inverse, certaines méthodes formelles imposent des langages informatiques particulier (par ex. SCADE) qui ne sont vraiment applicables que pour certains types d'algorithmes.*
+  - **Le domaine opérationnel est-il bien défini?**\
+    *Le domaine opérationnel (les conditions dans lesquelles le système va opérer) peut imposer ou éliminer certaines solutions (par ex. via les conditions environnementale telle que niveau de vibration, niveau de radiation, etc.)*
+    - **Les exigences de sûreté de fonctionnement (fiabilité, disponibilité, etc.) sont-elles exprimées?** 
+- **Les pré-conditions sur l'état du système pour que la spécification s'applique sont-elles exprimées?**
 
 *Ces contraintes rejoignent l'ensemble de contraintes qui sera "consulté" dans toutes les phases de conception. D'autre contraintes seront ajoutées au fur et à mesure du déroulement des activités d'ingénierie.*
 
+*On ne s'attend pas à ce  que les choses soient complètes et parfaites au départ de l'activité. Des questions vont nécessairement se poser au cours du développement, des précisions vont être requises, etc. C'est normal. Le processus de conception est un processus plutôt itératif ou la "boucle d'asservissement" qui cherche à faire converger le système de développement vers la meilleure solution doit être la plus courte possible. On ne doit pas attendre que tout soit parfait pour débuter le travail car certaines exigences "amont" peuvent significativement changer lors des premières phases de conception.*
 
-- **Le domaine opérationnel est-il bien défini?**\
-  *Le domaine opérationnel (les conditions dans lesquelles le système va opérer) peut déterminer/éliminer certaines des solutions, par ex. via les conditions environnementale (nivceau de vibration, niveau de radiation, etc.)*
-  - **Les exigences de sûreté de fonctionnement (fiabilité, disponibilité, etc.) sont-elles exprimées?** 
-    	
-## 1.b - Assurance de la bonne compréhension du problème
 
-- **Ai-je bien compris les termes de la spécification?**\
-    Par exemple: 
-    > Qu'appelez-vous "visiteur"?\
-    > Qu'est ce qui permet de distinguer un "visiteur" d'une personne "non-visiteur"?
+## 1.b - Assurance de la bonne compréhension de la spécification
 
-- **Suis-je capable de reformuler le problème?**
-- **Suis-je capable d'énoncer un ensemble de scénarios correspondant au problème?** et **ces scénarios sont-ils pertinents pour le Client?**
+- **Ai-je bien compris les termes (les "mots") de la spécification?**
+  - **Le sens que je donne aux termes de la spécification est-il bien celui voulu par le rédacteur de la spécification?**\
+    Par exemple : 
+    > REQ.: "The tracking function shall control the robot movement to maintain a distance of less than 2m from the visitor."
+    >> Qu'appelez-vous "visiteur"?\
+    >> Qu'est-ce qui permet de distinguer un "visiteur" d'un "non-visiteur"?
+  - **Suis-je capable de reformuler la spécification en utilisant des termes différents?**
+- **Suis-je capable d'énoncer un ensemble de scénarios correspondant à la spécification ?** et **Ces scénarios sont-ils pertinents pour le rédacteur de la spécification?**\
+Par exemple :
+    > Le visiteur se présente devant le robot. Le robot reconnait qu'il s'agit d'un visiteur. Le robot l'invite à le suivre. Le robot se déplace vers la salle de réunion. Le visiteur le suit. Le robot accélère ou ralenti afin de maintenir une distance d'au plus 2m avec lui. 
 
-## 1.c - Assurance de la bonne compréhension du problème
+## 1.c - Assurance de la disponibilité des informations nécessaires
 
 - **Ai-je connaissance de l'existant?**
     - **Ai-je accès aux documents de conception de systèmes similaires?**
     - **Ai-je la liste des composants sur étagère déjà disponibles, réutilisables?**
+    - **Suis-je capable d'exploiter ces informations avec mes propres connaissances ou ai-je besoin de l'aide d'un expert?**
   
 - **A-t-on déjà une première idée de l'architecture cible?**
+  - **Ces "premières idées" sont-elles des exigences, des recommandations ou de l'information?**
 
 # Décomposition fonctionnnelle
 
@@ -47,7 +64,7 @@
 - **Comment la fonction mère se décompose-t-elle en fonctions filles?**
     - **Quels sont les résultats intermédiaires qui me permettraient de produire le résultat final?**
     - **Quelles sont les fonctions qui produiraient ces résultats intermédiaires?**
-    - **Comment les fonctions filles se combinents-elles pour créer un chemin allant des entrées de la fonctons à ses sorties?**
+    - **Comment les fonctions filles se combinents-elles pour créer un chemin allant des entrées de la fonctions à ses sorties?**
 
 - **Quelles sont les entrées et sorties (résultats) de chaque fonction?**
   - **La fonction est-elle réalisable ?** (c-à-d ai-je une idée de la méthode / algorithme à mettre en oeuvre? l'ai-je déjà fait? la méthod / algorithme est-il déjà disponible?)
@@ -77,6 +94,8 @@
 - Les fonctions filles doivent pouvoir être organisées en une chaine fonctionnelle.
   - Les entrées d'une fonction fille doivent être les entrées de la fonction mère ou les sorties d'une autre fonction fille.\
   *Le processus de conception est donc d'une certaine manière global, même si on peut commencer par une fonction fille (par ex. parce qu'elle est évidente) puis introduire progressivement les autres fonctions qui vont permettre de créer les entrées de celles-ci oiu transformer les sortis de celles-ci pour arriver au résultat attentdu pour la fonction mère. Dans tous les cas, les fonctions ne sont pas créées indépendamment les unes des autres.* 
+- **Les fonctions filles de plus bas niveau doivent pouvoir être réalisées par un et un seule composant.**\
+  *Cette  propriété ne peut pas être vérifiée avant que l'architecture du système soit défini, mais, en général, on a une petite idée des déploiement possibles sur la base de l'expérience ou de systèmes analogues*.
 - S'il existe un composant  prédéveloppé (par ex. bibliothèque logiciel, outil,...) qui produit un résultat intermédiaire, je privilégie ce composant en utilisant une ou plusieurs fonctions filles réalisées par ce compsant. Dans ce cas, je privilégie 
   - les composants développés en interne (notamment s'ils viennent avec les documents ("dossiers") requis par les processus)
   - les composants ayant une grande maturité (stables, long retour d'expérience, grand nombre d'utilisateurs)
@@ -100,23 +119,29 @@
 
 - **L'exigence est-elle clairement énoncée?**
   - **L'exigence définit-elle clairement la fonction à réaliser?**
-  - **Les termes de l'exigences sont-ils bien définis?** 
-  - **N'y a-t-il qu'une seule façon d'interpréter l'exigence?** 
-  - **Les entrées et les sorties attendues de la fonction sont-elle bien définies?**
-- **L'exigence est-elle justifiée?** (n'est-ce pas une sur-spécification). Cela s'applique notamment aux exigences qui mentionnent le choix de solutions techniques.
-
+  - **Les termes de l'exigences sont-ils bien définis?**
+- **L'exigence laisse-t-elle la place à l'interprétation?**
+  - **Les termes de l'exigences sont-ils précis?**
+    - **L'exigence utilise-t-elle des termes naturellement imprécis (par ex "vite", "léger") alors qu'elle fait référence à des quantités physiques mesurables (la vitesse, le poids)?**
+    - **Peut-on exhiber plusieurs interprétations de l'exigence?** ou **Certains termes peuvent-ils avoir plusieurs significations  (interprétation)?** 
+  - **Les entrées et les sorties de la fonction sont-elle bien définies?**
+- **L'exigence est-elle justifiée?** (C'est-à-dire : n'est-ce pas une sur-spécification?). Cela s'applique notamment aux exigences qui mentionnent le choix de solutions techniques.
+- **L'exigence exprime-t-elle une propriété toujours vraie ou une propriété qui peut ponctuellement être non-satisfaite?**\
+ Cela relève de l'imprécision...  Par exemple: 
+  > Si le robot se trouve à une distance de 2m du visiteur et que celui-ci fait un pas en arrière, la distance va être supérieure à 2m pendant un instant (éventuellement très bref). Est-ce acceptable? 
 - **L'exigence est-elle vérifiable?** C-à-d : puis-je imaginer un protocole (scénario de test, procédure de vérification formelle, etc.) qui me permette de répondre à la question "L'exigence est-elle satisfaite?"
 - **L'exigence est-elle cohérente?**
   - **L'exigence est-elle incohérente ?** (c-à-d : demande-t-elle quelque chose de contradictoire, d'irréalisable du type "Je veux que l'objet soit totalement rouge et totalement bleu.")
   
 
-### Propriétés relevant de plusieurs exigences
+### Propriétés relevant de plusieurs exigences pou rune même fonctions ou des fonctions différentes
 
 - **Les exigences sont-elle compatibles (non contradictoires)?**
-  - **Suis-je capable d'exhiber un modèle dans lequel l'ensemble des exigences seraient satisfaites?**
+  - **Suis-je capable d'exhiber un modèle dans lequel toutes les exigences seraient satisfaites?**
 
 - **Le jeu d'exigences est-il complet?**
-    **Y a-t-il des exigences sur toutes les entrée et les sorties de la fonctions?**
+    **Y a-t-il des exigences portant sur toutes les entrées et sorties de la fonctions?**
+    **Y a-t-il au moins une exigence qui mette en relation entre les entrées et les sorties de la fonction?** 
     **Ai-je bien pris en compte les exigences des fonctions en aval / contraintes des fonctions en amont dans la chaîne fonctionnelle?**
 
 ### Propriété relevant du lien avec les exigences en amont (traçabilité)
