@@ -1,9 +1,101 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3">
   <diagram name="Page-1" id="Dc1wXV0wrsYBxKNEe2hL">
-    <mxGraphModel>
+    <mxGraphModel dx="1687" dy="5559" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-1" target="D9PfC0_vNRn3CqfPcU_y-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-1" value="Compléter la liste des features" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-2" value="Constituer les datasets" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="-60" width="440" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-3" target="D9PfC0_vNRn3CqfPcU_y-33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-3" value="Identifier des applications représentatives" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-4" target="D9PfC0_vNRn3CqfPcU_y-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-4" value="Définir les critères de représentativité" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-5" value="Mettre en place le banc T2080" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="70" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-6" value="Poser le problème en termes LNP" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-7" value="Proposer les abstractions de la trace" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-8" target="D9PfC0_vNRn3CqfPcU_y-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-8" value="Executer le code et obtenir les traces" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-9" value="Définir les observables" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-11" value="Evaluer les performances du modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-13" value="Concevoir / choisir le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-14" value="Réaliser la phase d&#39;apprentissage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-15" value="Evaluer les performances du modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="380" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-16" value="Identifier les &lt;i&gt;features &lt;/i&gt;par une analyse statistique" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="720" y="100" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-19" value="Identifier les &lt;i&gt;features &lt;/i&gt;par une analyse documentaire (par ex. DDR)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="720" y="160" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.169;entryY=0.982;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-19" target="D9PfC0_vNRn3CqfPcU_y-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-23" target="D9PfC0_vNRn3CqfPcU_y-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-23" value="Modifier l&#39;outillage de génération de code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="D9PfC0_vNRn3CqfPcU_y-25" target="D9PfC0_vNRn3CqfPcU_y-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-25" value="Générer le code conforme aux métriques" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="35" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-26" value="Evaluer les effets temporels" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-33" value="Adapter les applications" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-36" value="Investiguer les méthodes d&#39;explicabilité" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-37" value="Metre en place la capacité d&#39;exéuction multi-coeur" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="350" y="180" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="D9PfC0_vNRn3CqfPcU_y-38" value="Mettre en place les moyens d&#39;observation (sondes, reistres de perf.)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
