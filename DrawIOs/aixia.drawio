@@ -97,7 +97,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="a8Mv1S5u0KbBKHDu59hJ-5" value="Mettre à dispo. les moyens de calcul (training)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" parent="1" vertex="1">
-          <mxGeometry x="990" y="840" width="120" height="40" as="geometry" />
+          <mxGeometry x="1000" y="840" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="a8Mv1S5u0KbBKHDu59hJ-6" value="Rendre la plateforme accessible à distance" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#f8cecc;" parent="1" vertex="1">
           <mxGeometry x="470" y="560" width="130" height="40" as="geometry" />
@@ -148,7 +148,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="HARdlWa18HNiX25xkkua-3" value="Compléter (éventuellement) les moyens d&#39;obs." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
-          <mxGeometry x="990" y="790" width="120" height="40" as="geometry" />
+          <mxGeometry x="1000" y="790" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="HARdlWa18HNiX25xkkua-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="HARdlWa18HNiX25xkkua-5" target="a8Mv1S5u0KbBKHDu59hJ-2">
           <mxGeometry relative="1" as="geometry">
@@ -392,9 +392,6 @@
         <mxCell id="HARdlWa18HNiX25xkkua-63" value="Entrainer le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="2080" y="520" width="400" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="HARdlWa18HNiX25xkkua-64" value="Valider le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="2600" y="520" width="400" height="40" as="geometry" />
-        </mxCell>
         <mxCell id="HARdlWa18HNiX25xkkua-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;fillColor=#e1d5e7;" edge="1" parent="1" source="HARdlWa18HNiX25xkkua-63" target="HARdlWa18HNiX25xkkua-64">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="2440" y="540" as="sourcePoint" />
@@ -534,6 +531,9 @@
         </mxCell>
         <mxCell id="HARdlWa18HNiX25xkkua-113" value="Dataset" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=16;fontSize=9;fillColor=#fff2cc;strokeColor=#d6b656;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" vertex="1" parent="1">
           <mxGeometry x="2160" y="-47.5" width="40" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="HARdlWa18HNiX25xkkua-64" value="Valider le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="2600" y="520" width="400" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
