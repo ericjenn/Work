@@ -21,22 +21,6 @@ style: |
   section {
     font-size: 25px;
   }
-  div.twocols {
-    margin-top: 35px;
-    column-count: 2;
-  }
-  div.twocols p:first-child,
-  div.twocols h1:first-child,
-  div.twocols h2:first-child,
-  div.twocols ul:first-child,
-  div.twocols ul li:first-child,
-  div.twocols ul li p:first-child {
-    margin-top: 0 !important;
-  }
-  div.twocols p.break {
-    break-before: column;
-    margin-top: 0;
-  }
   p.caption {
     font-size: 10px;
     text-align: center
@@ -83,8 +67,8 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
   - Quelles sont les causes (règlementation, ressources, délocalisation, situation monopolistique, etc.)
   - Quels sont les enjeux de la souveraineté dans le domaine?
     - Quels sont les conséquence d'un manque de souveraineté?
-    - Des faits, des observations...
   - Quelle est la situation actuelle à l'échelle de l'Europe, de la France,...)? Comment évolue-t-elle?
+    - Faits, observations, sources...
 - Perspectives
   - Quelles sont les initiatives en cours pour accroître notre souveraineté?
   - Comment agir dans notre écosystème local? 
@@ -109,10 +93,15 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
   - L'initiative "RISC-V", la *European Processor Initiative* 
 
 ---
-# Souveraineté et IA (framework IA, *DeepGreen*,..)
+# Souveraineté et IA
 ## Constat
+
+- Les outils (dont les frameworks) IA sont essentiellement américains...
+  
 *À compléter...*
 ## Perspectives
+
+- L'initiative DeepGreen
 *À compléter...*
 
 ---
@@ -145,6 +134,9 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 ## Constat
 *À compléter*
 ## Perspectives
+
+- Quels axes de formations, filières pour assurer notre souveraineté?
+- Comment garder les compétences en France, en Europe
 *À compléter*
 
 ---
