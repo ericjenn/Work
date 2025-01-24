@@ -114,9 +114,13 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 ---
 # Souveraineté et systèmes
 ## Constat
+- Dans la filière spatiale
+  - lanceurs
+  - constellations 
 *À compléter...*
 ## Perspectives
-*À compléter...*
+- IRIS2
+- *À compléter...*
       
 ---
 # Souveraineté et *cloud computing*
@@ -136,8 +140,8 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 ## Perspectives
 
 - Quels axes de formations, filières pour assurer notre souveraineté?
-- Comment garder les compétences en France, en Europe
-*À compléter*
+- Comment garder les compétences en France, en Europe?
+- *À compléter*
 
 ---
 # Souveraineté et recherche scientifique
