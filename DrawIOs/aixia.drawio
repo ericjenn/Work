@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.0.7">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.0.8">
   <diagram name="Page-1" id="Dc1wXV0wrsYBxKNEe2hL">
-    <mxGraphModel dx="4777" dy="5281" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
+    <mxGraphModel dx="5885" dy="5731" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -534,15 +534,6 @@
         </mxCell>
         <mxCell id="HARdlWa18HNiX25xkkua-64" value="Valider le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
           <mxGeometry x="2600" y="520" width="400" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="iQIZelgwndi9-5TrAC6Y-1" value="Analyse des performances / robustesse sur le jeu de données de test" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
-          <mxGeometry x="2600" y="580" width="170" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="iQIZelgwndi9-5TrAC6Y-2" value="Analyse de la qualité de la base" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
-          <mxGeometry x="1190" y="600" width="170" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="iQIZelgwndi9-5TrAC6Y-3" value="Définir les métriques du modèle" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
-          <mxGeometry x="1970" y="600" width="140" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
