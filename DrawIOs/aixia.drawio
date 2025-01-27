@@ -535,8 +535,11 @@
         <mxCell id="HARdlWa18HNiX25xkkua-64" value="Valider le modèle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
           <mxGeometry x="2600" y="520" width="400" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="iQIZelgwndi9-5TrAC6Y-1" value="Analyse des performances/ robustesse sur le jeu de données de test" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
+        <mxCell id="iQIZelgwndi9-5TrAC6Y-1" value="Analyse des performances / robustesse sur le jeu de données de test" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
           <mxGeometry x="2600" y="580" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iQIZelgwndi9-5TrAC6Y-2" value="Analyse de la qualité de la base" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9673a6;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=9;fillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="600" width="170" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
