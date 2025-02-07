@@ -52,15 +52,15 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 
 ---
 # Axes
-- Souveraineté et composants électroniques (HW , architecture)
-- Souveraineté et IA (framework IA, *DeepGreen*,..)
-- Souveraineté et données 
-- Souveraineté et *Cloud computing*
-- Souveraineté et systèmes
-  - Domaine spatial : Lanceurs, Systèmes spatiaux (IRIS2)
-- Souveraineté et formation 
-- Souveraineté et rercherche académique
+- Souveraineté et composants électroniques (HW , architecture) (Wilfrid [Laurent, Jean-Luc])
+- Souveraineté IA (framework IA, *DeepGreen*,..) et "_cloud computing_"  (Eric)
+- Souveraineté Données et Cyber sécurité (Lionel [Mathieu])
+- Souveraineté et formation et recherche académique (Nathalie [Silvano, Julien])
 
+<div class="note"> Etablir des transitions entre less axes : Composants élect =[nvidia]=> IA =[besoin de données]=> Données et sécu.  
+et les aspects formations sont transverses à tous les sujets...
+</div>
+<div class="note"> Douanes (_Export control_), DGSI,... </div>
 ---
 #  Structure (pour chaque axe)
 - Constat 
@@ -84,7 +84,10 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 - La prolématique ITAR (ITAR, voir [ici](https://www.portail-ie.fr/univers/droit-et-intelligence-juridique/2019/jdr-norme-itar-lexposition-des-technologies-francaises-aux-restrictions-americaines/))
 - Problèmes de propriété intellectuelle (IP)
 - Problèmes liés à la sécurité (backdoors, le cas Huawei)
-  
+
+<div class="act"> [Action Laurent : contacts à établir côté ST...] </div>
+
+<div class="note"> Etude "marché" sur le positionnement européen... (Laurent) </div>
 ---
 ## Perspectives
 
@@ -93,7 +96,7 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
   - L'initiative "RISC-V", la *European Processor Initiative* 
 
 ---
-# Souveraineté et IA
+# Souveraineté IA et Données
 ## Constat
 
 - Les outils (dont les frameworks) IA sont essentiellement américains...
@@ -103,25 +106,7 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 
 - L'initiative DeepGreen
 *À compléter...*
-
----
-# Souveraineté et données 
-## Constat
-*À compléter...*
-## Perspectives
-*À compléter...*
    
----
-# Souveraineté et systèmes
-## Constat
-- Dans la filière spatiale
-  - lanceurs
-  - constellations 
-*À compléter...*
-## Perspectives
-- IRIS2
-- *À compléter...*
-      
 ---
 # Souveraineté et *cloud computing*
 ## Constat
@@ -134,7 +119,7 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 - L'initiative opencloud, *GAIA-X*
 
 ---
-# Souveraineté et formation
+# Souveraineté, Formation et Recherche Académique
 ## Constat
 *À compléter*
 ## Perspectives
@@ -143,10 +128,4 @@ Souveraineté dans le domaine des systèmes embarqués : les menaces, les enjeux
 - Comment garder les compétences en France, en Europe?
 - *À compléter*
 
----
-# Souveraineté et recherche scientifique
-## Constat
-*À compléter*
-## Perspectives
-*À compléter*
 
