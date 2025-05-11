@@ -1,0 +1,245 @@
+module Graph
+
+  use  int.Int
+  use  list.List
+  use  list.FoldLeft
+  use  list.Mem
+  use  list.Length 
+  use  list.Append
+  use  option.Option
+  use list.Nth
+
+type nodeid = int
+type tensorid = int
+type tensorstate = { id: tensorid; iset: bool }
+type state = list tensorstate
+
+(* Utilities *)
+
+let rec fold_left (f: 'a -> 'b -> 'a) (acc: 'a) (l: list 'b) : 'a
+  variant { l }
+= match l with
+  | Nil -> acc
+  | Cons x xs -> fold_left f (f acc x) xs
+  end
+
+let rec map (f: 'a -> 'b ) (l: list 'a) : list 'b
+  variant { l }
+= match l with
+  | Nil -> Nil
+  | Cons x xs -> Cons (f x) (map f xs)
+  end
+
+let rec mem_concrete (x: int) (l: list int) : bool
+ensures { result <-> mem x l }
+  variant { l }
+= match l with
+  | Nil -> false
+  | Cons y r -> 
+      if x = y then 
+        true 
+      else 
+        mem_concrete x r
+  end
+
+let rec list_diff (l1 l2: list int) : list int
+  ensures { forall x: int. mem x result -> mem x l1 /\ not (mem x l2) }
+  variant { l1 }
+= match l1 with
+  | Nil -> Nil
+  | Cons h tl ->
+      if mem_concrete h l2 then
+        list_diff tl l2
+      else
+        Cons h (list_diff tl l2)
+  end
+
+
+let fold_left_and (l: list bool) : bool =
+  fold_left (fun acc x -> acc && x) true l
+
+
+let eq_node (n1: nodeid)(n2: nodeid) : bool = n1 = n2
+
+
+type onnxgraph = list (nodeid, list tensorid, tensorid)
+
+
+(* Check if a node exists in the graph *)
+  let rec mem_node (g: onnxgraph) (n: nodeid) : bool
+    ensures { result <-> (exists i, o. mem (n, i, o) g) }
+    variant { length g }
+  = match g with
+    | Nil -> false
+    | Cons (n', _, _) g' -> if eq_node n n' then true else mem_node g' n
+    end
+
+
+
+let rec tensor_state (s: state) (tid: tensorid) : bool =
+  ensures { result -> (exists t: tensorstate. mem t s /\ t.id = tid /\ t.iset) }
+  variant { length s }
+    match s with
+    | Nil -> false
+    | Cons h tl ->
+        if h.id = tid then h.iset else tensor_state tl tid
+    end
+
+  (* Find input tensors list for a given node *)
+  let rec find_inputs (g: onnxgraph) (n: nodeid) : option (list tensorid)
+    ensures { match result with
+              | None -> true
+               | Some res  -> (exists o. mem (n, res, o) g) 
+    end  }
+    variant { length g } 
+  = match g with
+    | Nil -> None
+    | Cons (n', i, _) g' ->
+        if eq_node n n' then Some i else find_inputs g' n
+    end
+
+      (* Find input tensors list for a given node *)
+  let rec find_output (g: onnxgraph) (n: nodeid) : option tensorid
+    ensures { match result with
+              | None -> true
+              | Some res -> exists i. mem (n, i, res) g
+              end }
+    variant { length g } 
+  = match g with
+    | Nil -> None
+    | Cons (n', _, o) g' ->
+        if eq_node n n' then Some o else find_output g' n
+    end
+
+  (* Add a new node with a list of inputs and one output *)
+  let add_node (g: onnxgraph) (n: nodeid) (inputs: list tensorid) (output: tensorid): onnxgraph
+    requires { not exists i, o. mem (n, i, o) g }
+    requires { not exists n1, i. mem (n1, i, output) g }
+    ensures {  mem (n, inputs, output) result  }
+  = Cons (n, inputs, output ) g
+
+
+let is_executable (g: onnxgraph) (n: nodeid) (s: state): bool =
+ let inputs = find_inputs g n in 
+  match inputs with
+  | None -> true
+  | Some i ->
+    fold_left_and (map (fun tid -> tensor_state s tid) i)
+  end
+
+let rec get_all_outputs (g: onnxgraph) : list tensorid = 
+  variant { g }
+  match g with 
+  | Nil -> Nil
+  | Cons (_, _, o) g' -> Cons o (get_all_outputs g')
+  end 
+
+
+predicate all_unique (l: list int) =
+  forall i j: int. 0 <= i < length l /\ 0 <= j < length l -> i <> j -> nth i l <> nth j l
+  (* forall x,xs. l = Cons x xs -> not mem x xs /\ no_duplicates xs *)
+
+
+
+(* Second version with accumulator: cannot discharge all_unique *)
+let remove_duplicates_1 (l: list int) : list int =
+  ensures { forall x.  mem x l <-> mem x result }
+
+  let rec aux l acc : list int =
+  ensures { forall x. (mem x result) <-> (mem x acc \/ (mem x l /\ not (mem x acc))) } 
+  (*  ensures { all_unique result } *)
+    variant { l }
+    match l with
+    | Nil -> acc
+    | Cons h tl ->
+        if mem_concrete h acc then
+          aux tl acc
+        else
+          aux tl (Cons h acc)
+    end in
+  aux l Nil
+
+(* For any list, if an element x does not belong to a list, there is no index in the list containing x 
+lemma l1: 
+          forall l: list int. 
+            forall x. 
+              not (mem x l) -> 
+                forall i: int. 0 <= i < length l -> nth i l <> Some x
+*)
+
+(* First version without accumulator: cannot discharge all_unique *)
+let rec remove_duplicates (l: list int) : list int =
+  ensures { forall x.  mem x l <-> mem x result }
+(* ensures { all_unique result }  *)
+  variant { l }
+    match l with
+    | Nil -> Nil
+    | Cons h tl ->
+        if mem_concrete h tl then
+          remove_duplicates tl 
+        else
+          let r=remove_duplicates tl in
+          assert { not (mem h r) };
+         (* assert { forall i: int. 0 <= i < length r -> not exists x. nth i l = Some x /\  x = h }; *)
+            Cons h r
+    end 
+
+
+
+
+let get_all_inputs (g: onnxgraph) : list tensorid = 
+  (* ensures { forall x. mem x result <-> exists n, i, o. mem (n, i, o) g /\ mem x i } *)
+  (* ensures { all_unique result }  *)
+  let rec aux g =
+    variant { g }
+    match g with 
+    | Nil -> Nil
+    | Cons (_, i, _) g' -> 
+          i ++ aux g' 
+    end 
+  in
+  remove_duplicates (aux g)
+
+(* Get all free inputs (i.e., tensors that are not outputs of some operator) *)
+let get_all_free_inputs (g: onnxgraph) : list tensorid = 
+  list_diff (get_all_inputs g) (get_all_outputs g)
+
+  
+
+
+
+
+
+(* Generate the list of operators that are executable *)
+let get_executable_nodes (g: onnxgraph) (s: state): list nodeid =
+  let rec aux g acc =
+    variant { g }
+    match g with
+    | Nil -> acc
+    | Cons (n, _, _) g' ->
+        if is_executable g n s then 
+          aux g' (Cons n acc) 
+        else 
+          aux g' acc
+    end
+  in
+  aux g Nil
+
+
+
+(*
+
+let execute (g: onnxgraph) (s: state) : state
+  requires { forall n: nodeid. mem_node g n -> is_executable g n }
+  ensures { forall n: nodeid. mem_node g n -> tensor_state (find_output g n) } 
+  = 
+  let inputs = get_all_free_inputs g in
+  let outputs = get_all_outputs g in
+  let states = map (fun i -> { id = i; state = true }) inputs in
+  let new_states = fold_left (fun acc x -> { id = x; state = true } :: acc) states outputs in
+  ()
+end
+*)
+
+
+end

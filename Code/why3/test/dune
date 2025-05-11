@@ -1,0 +1,4 @@
+(tests
+  (names matrix where graph)
+  (flags ("-open" "Tensorlib"))
+  (libraries tensorlib))

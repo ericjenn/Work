@@ -1,0 +1,28 @@
+{
+  "profile": [ { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 } ],
+  "proofs": {
+    "Graph": {
+      "add_edge": { "prover": "alt-ergo@2.6.1", "time": 0.038 },
+      "add_node": { "prover": "alt-ergo@2.6.1", "time": 0.008 },
+      "add_vertex": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
+      "find_adj": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "find_adj_ghost": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "find_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.026 },
+      "find_output": { "prover": "alt-ergo@2.6.1", "time": 0.033 },
+      "fold_left": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "fold_left_and": { "prover": "alt-ergo@2.6.1", "time": 0.021 },
+      "get_all_free_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.01 },
+      "get_all_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.03 },
+      "get_all_outputs": { "prover": "alt-ergo@2.6.1", "time": 0.011 },
+      "is_executable": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "list_diff": { "prover": "alt-ergo@2.6.1", "time": 0.045 },
+      "map": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "mem_concrete": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
+      "mem_edge": { "prover": "alt-ergo@2.6.1", "time": 0.016 },
+      "mem_list": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
+      "mem_node": { "prover": "alt-ergo@2.6.1", "time": 0.023 },
+      "mem_vertex": { "prover": "alt-ergo@2.6.1", "time": 0.02 },
+      "test": { "prover": "alt-ergo@2.6.1", "time": 0.013 }
+    }
+  }
+}

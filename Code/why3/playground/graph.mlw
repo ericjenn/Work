@@ -1,0 +1,220 @@
+module Graph
+
+  use  int.Int
+  use  list.List
+  use  list.FoldLeft
+  use  list.Mem
+  use  list.Length 
+  use  list.Append
+  use  option.Option
+
+type nodeid = int
+type tensorid = int
+type tensorstate = bool
+
+
+
+
+let rec fold_left (f: 'a -> 'b -> 'a) (acc: 'a) (l: list 'b) : 'a
+  variant { l }
+= match l with
+  | Nil -> acc
+  | Cons x xs -> fold_left f (f acc x) xs
+  end
+
+let rec map (f: 'a -> 'b ) (l: list 'a) : list 'b
+  variant { l }
+= match l with
+  | Nil -> Nil
+  | Cons x xs -> Cons (f x) (map f xs)
+  end
+
+let rec mem_concrete (x: int) (l: list int) : bool
+ensures { result <-> mem x l }
+  variant { l }
+= match l with
+  | Nil -> false
+  | Cons y r -> if x = y then true else mem_concrete x r
+  end
+
+let rec list_diff (l1 l2: list int) : list int
+  ensures { forall x: int. mem x result -> mem x l1 /\ not (mem x l2) }
+  variant { l1 }
+= match l1 with
+  | Nil -> Nil
+  | Cons h tl ->
+      if mem_concrete h l2 then
+        list_diff tl l2
+      else
+        Cons h (list_diff tl l2)
+  end
+
+
+let fold_left_and (l: list bool) : bool =
+  fold_left (fun acc x -> acc && x) true l
+
+
+
+
+  (* Abstract type of vertices *)
+  type vertex = int
+
+    let eq_vertex (v1: vertex)(v2: vertex) : bool = v1 = v2
+
+       let eq_node (n1: nodeid)(n2: nodeid) : bool = n1 = n2
+
+  (* Graph is represented as a list of adjacency lists *)
+  type graph = list (vertex, list vertex)
+
+
+
+type onnxgraph = list (nodeid, list tensorid, tensorid)
+
+
+(* Check if a node exists in the graph *)
+  let rec mem_node (g: onnxgraph) (n: nodeid) : bool
+    ensures { result <-> (exists i, o. mem (n, i, o) g) }
+    variant { length g }
+  = match g with
+    | Nil -> false
+    | Cons (n', _, _) g' -> if eq_node n n' then true else mem_node g' n
+    end
+
+
+val tensor_state (t: tensorid): tensorstate 
+
+
+  (* Check if a vertex exists in the graph *)
+  let rec mem_vertex (g: graph) (v: vertex) : bool
+    ensures { result <-> (exists l. mem (v, l) g) }
+    variant { length g }
+  = match g with
+    | Nil -> false
+    | Cons (v', _) g' -> if eq_vertex v v' then true else mem_vertex g' v
+    end
+
+  (* Find input tensors list for a given node *)
+  let rec find_inputs (g: onnxgraph) (n: nodeid) : option (list tensorid)
+    ensures { match result with
+              | None -> true
+               | Some res  -> (exists o. mem (n, res, o) g) 
+    end  }
+    variant { length g } 
+  = match g with
+    | Nil -> None
+    | Cons (n', i, _) g' ->
+        if eq_node n n' then Some i else find_inputs g' n
+    end
+
+      (* Find input tensors list for a given node *)
+  let rec find_output (g: onnxgraph) (n: nodeid) : option tensorid
+    ensures { match result with
+              | None -> true
+              | Some res -> exists i. mem (n, i, res) g
+              end }
+    variant { length g } 
+  = match g with
+    | Nil -> None
+    | Cons (n', _, o) g' ->
+        if eq_node n n' then Some o else find_output g' n
+    end
+
+  (* Find adjacency list for a given vertex *)
+  let rec find_adj (g: graph) (v: vertex) : list vertex
+    ensures { result <> Nil -> mem (v, result) g  }
+    variant { length g } 
+  = match g with
+    | Nil -> Nil
+    | Cons (v', l) g' ->
+        if eq_vertex v v' then l else find_adj g' v
+    end
+
+
+  let rec ghost find_adj_ghost (g: graph) (v: vertex) : list vertex
+    ensures { result <> Nil -> mem (v, result) g  }
+    variant { length g } 
+  = match g with
+    | Nil -> Nil
+    | Cons (v', l) g' ->
+        if eq_vertex v v' then l else find_adj_ghost g' v
+    end
+
+  (* Add a new node with a list of inputs and one output *)
+  let add_node (g: onnxgraph) (n: nodeid) (inputs: list tensorid) (output: tensorid): onnxgraph
+    requires { not exists i, o. mem (n, i, o) g }
+    requires { not exists n1, i. mem (n1, i, output) g }
+    ensures {  mem (n, inputs, output) result  }
+  = Cons (n, inputs, output ) g
+
+
+  (* Add a new vertex with no edges *)
+  let add_vertex (g: graph) (v: vertex) : graph
+    ensures {  mem (v, Nil) result  }
+  = Cons (v, Nil) g
+
+
+  (* Add a directed edge from v1 to v2 *)
+  let rec add_edge (g: graph) (v1 v2: vertex) : graph
+  ensures {  exists adj. mem (v1, adj) result /\ mem v2 adj }
+  variant { length g } 
+  = match g with
+    | Nil -> Cons (v1, Cons v2 Nil) Nil 
+    | Cons (v, adj) g' ->
+        if eq_vertex v v1 then
+          Cons (v, Cons v2 adj) g'
+        else
+          Cons (v, adj) (add_edge g' v1 v2)
+    end
+
+let rec mem_list (x: vertex) (l: list vertex) : bool
+  variant { l }
+= match l with
+  | Nil -> false
+  | Cons h t -> if (eq_vertex x h) then true else mem_list x t
+end
+
+
+  (* Check if there is an edge from v1 to v2 *)
+  let rec mem_edge (g: graph) (v1 v2: vertex) : bool
+  variant { length g }
+  = match g with 
+    | Nil -> false
+    | Cons (v, adg)  g' ->
+        if eq_vertex v v1 then
+          mem_list v2 adg
+        else
+          mem_edge g' v1 v2
+    end
+
+    let test () =
+     let g = Cons (1, Nil) (Cons (2, Nil) Nil) in
+     add_edge g 1 2
+
+let is_executable (g: onnxgraph) (n: nodeid): bool =
+ let inputs = find_inputs g n in 
+  match inputs with
+  | None -> true
+  | Some i ->
+    fold_left_and (map tensor_state i)
+  end
+
+let rec get_all_outputs (g: onnxgraph) : list tensorid = 
+  variant { g }
+  match g with 
+  | Nil -> Nil
+  | Cons (_, _, o) g' -> Cons o (get_all_outputs g')
+  end 
+
+let rec get_all_inputs (g: onnxgraph) : list tensorid = 
+  variant { g }
+  match g with 
+  | Nil -> Nil
+  | Cons (_, i, _) g' -> i ++ (get_all_inputs g')
+  end 
+
+let get_all_free_inputs (g: onnxgraph) : list tensorid = 
+  list_diff (get_all_inputs g) (get_all_outputs g)
+  
+
+
+end

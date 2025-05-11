@@ -1,0 +1,50 @@
+{
+  "profile": [
+    { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 },
+    { "prover": "alt-ergo@2.5.4", "size": 16, "time": 0.207 }
+  ],
+  "proofs": {
+    "FlatTensor": {
+      "mixfix [<-]": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.5.4", "time": 0.019 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.022 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.022 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.021 }
+        ]
+      },
+      "mixfix []": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.5.4", "time": 0.02 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.02 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.022 }
+        ]
+      },
+      "mixfix []<-": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.5.4", "time": 0.015 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.02 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.021 },
+          { "prover": "alt-ergo@2.5.4", "time": 0.02 }
+        ]
+      },
+      "scalar": { "prover": "alt-ergo@2.5.4", "time": 0.017 },
+      "shape": { "prover": "alt-ergo@2.5.4", "time": 0.02 },
+      "tensor": { "prover": "alt-ergo@2.5.4", "time": 0.013 }
+    },
+    "Index": { "valid": { "prover": "alt-ergo@2.6.1", "time": 0.433 } },
+    "Shape": {
+      "product": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "product1": { "prover": "alt-ergo@2.6.1", "time": 0.044 },
+      "shape": { "prover": "alt-ergo@2.6.1", "time": 0.035 },
+      "shift": { "prover": "alt-ergo@2.6.1", "time": 0.017 }
+    },
+    "Tensor": {
+      "get": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "mem": { "prover": "alt-ergo@2.6.1", "time": 0.013 }
+    }
+  }
+}
