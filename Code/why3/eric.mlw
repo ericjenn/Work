@@ -134,12 +134,8 @@ let rec get_all_outputs (g: onnxgraph) : list tensorid =
   | Cons (_, _, o) g' -> Cons o (get_all_outputs g')
   end 
 
-
 predicate all_unique (l: list int) =
   forall i j: int. 0 <= i < length l /\ 0 <= j < length l -> i <> j -> nth i l <> nth j l
-  (* forall x,xs. l = Cons x xs -> not mem x xs /\ no_duplicates xs *)
-
-
 
 (* Second version with accumulator: cannot discharge all_unique *)
 let remove_duplicates_1 (l: list int) : list int =
@@ -171,6 +167,8 @@ lemma l1:
 let rec remove_duplicates (l: list int) : list int =
   ensures { forall x.  mem x l <-> mem x result }
 (* ensures { all_unique result }  *)
+ 
+
   variant { l }
     match l with
     | Nil -> Nil
