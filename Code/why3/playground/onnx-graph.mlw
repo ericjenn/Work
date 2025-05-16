@@ -171,7 +171,7 @@ predicate no_free_tensor (g: graph) =
         mem t g.tensors ->
             mem t g.gi \/
             exists op. 
-                mem op g.ops -> mem t op.ou
+                not mem op g.ops \/ mem t op.ou
 
 (* After execution, all outputs must have values *)
 predicate outputs_have_values (g: graph) (s: graph_state) =
