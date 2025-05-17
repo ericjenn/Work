@@ -11,6 +11,7 @@ use list.FoldLeft
 use list.Length
 use list.NthNoOpt
 use map.Const
+use bool.Bool
 
 type value = int
 
@@ -122,6 +123,7 @@ predicate op_ready (s: graph_state) (op: operation) =
         mem t op.oi -> is_initialized s t
 
 (* ##### Demonstration par récurrrence for op_read (that uses fold_left) ##### *)
+(* I want to prove that the fold_left function is equivalent to the recursive definition of the predicate. *) 
 
 predicate all_init (s: graph_state) (l: list tensor) = 
     forall t: tensor. mem t l -> is_initialized s t
@@ -138,10 +140,25 @@ lemma preservation :
     acc -> 
         match l with
         | Nil -> true
-        | Cons x xs -> (f s) acc x /\ all_init s xs
+        | Cons x xs -> (f s) true x /\ all_init s xs
         end
 
+
+(* ------------------------------------------------------------------------- *)
+(* Simple test *)
+(* ------------------------------------------------------------------------- *)
+predicate all_true (l: list bool)  = forall b: bool. mem b l -> b = true
+
+       
+axiom fold_left_and_equiv_all_true:
+  forall l: list bool.
+    fold_left Bool.andb true l = true <-> all_true l
+    
+(* ------------------------------------------------------------------------- *)    
+
 (* True if operation op is executable in state s *)
+(* Note that the ensures clause only states that the result is true if the operation is ready. 
+   It does not state that the result is false if the operation is not ready. *)
 let op_ready (s: graph_state) (op: operation) : bool
 ensures { result = true -> op_ready s op } 
 =
