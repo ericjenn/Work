@@ -1,4 +1,6 @@
 
+(*
+
 let g0 = [ (1, [1 ; 2 ; 3], 4) ; 
            (2, [1 ; 2], 5) ;
            (3, [4 ; 5 ], 6) ]
@@ -40,3 +42,6 @@ let () =
   print_list (Tensor.get_all_outputs g1);
   print_state s0;
   print_list (Tensor.get_executable_nodes g1 s0)
+
+  *)
+  

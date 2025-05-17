@@ -1,4 +1,4 @@
-module ONNX_Graph
+module Graph
 
 
 use int.Int
@@ -27,19 +27,20 @@ type graph_state = Map.map tensor (option value)
 type operator
 
 
-function input_arity (op: operator) : int = 3
-function output_arity (op: operator) : int = 2
+function input_arity (_: operator) : int = 3
+function output_arity (_: operator) : int = 2
 
 (* For the moment, we only consider the arity of the operator to check consistency.
 In the final version, we have to use a mapping formal parameters => actual tensors
 To be replaced by actual operators *)
 
-let input_arity (op: operator) : int = 3
-let output_arity (op: operator) : int = 2
+let input_arity (_: operator) : int = 3
+let output_arity (_: operator) : int = 2
 
 
 (* Map implementation *)
 let rec map (f: 'a -> 'b) (l: list 'a) : list 'b
+ensures { length result = length l }
 variant { l }
 = match l with
     | Nil -> Nil
@@ -59,6 +60,13 @@ variant { n }
     else 
         Cons x (make_list x (n - 1))
 
+(* Fold implementation with one parameters *)
+let rec fold_left (f: 'a -> 'b -> 'a) (acc: 'a) (l: list 'b) : 'a
+  variant { l }
+= match l with
+  | Nil -> acc
+  | Cons x xs -> fold_left f (f acc x) xs
+  end
 
 (* Computes the outputs of an operation  *)
 function eval_operator (op: operator) (inputs: list (option value)) : list (option value) 
@@ -67,7 +75,10 @@ function eval_operator (op: operator) (inputs: list (option value)) : list (opti
 let eval_operator (op: operator) (inputs: list (option value)) : list (option value) 
 requires { length inputs = input_arity op }
 requires { output_arity op > 0}
-ensures { length result = output_arity op }
+(* All outputs are initialized *)
+ensures { forall i. mem i result -> i <> None } 
+
+ensures { length result = output_arity op } (* There is one value per output tensor *)
 =
     (* This is a dummy implementation that return a list of identical values *)
     make_list (Some 0) (output_arity op)
@@ -88,22 +99,59 @@ type graph = {
     ops: list operation; (* graph operations *)
 }
 
-(* In a given state s, a tensor is initialized if it has some value. *)
+(* True if a tensor t is initialized in state s. *)
 predicate is_initialized (s: graph_state) (t: tensor) =
     match Map.get s t with
     | Some _ -> true
     | None -> false
 end
 
-(* True if an operation is ready to execute *)
+(* True if a tensor t is initialized in state s. *)
+let is_initialized (s: graph_state) (t: tensor) : bool 
+ensures { result = is_initialized s t }
+=
+    match Map.get s t with
+    | Some _ -> true
+    | None -> false
+    end
+
+(* True if operation op is executable in state s *)
 predicate op_ready (s: graph_state) (op: operation) =
     (* An operation is ready if all its inputs tensors are initialized *)
     forall t: tensor. 
         mem t op.oi -> is_initialized s t
 
+(* ##### Demonstration par récurrrence for op_read (that uses fold_left) ##### *)
+
+predicate all_init (s: graph_state) (l: list tensor) = 
+    forall t: tensor. mem t l -> is_initialized s t
+    
+
+function f (s: graph_state) (acc: bool)  (t: tensor) : bool =
+  acc && is_initialized s t
+
+let  f (s: graph_state) (acc: bool)  (t: tensor) : bool =
+  acc && is_initialized s t
+
+lemma preservation :
+    forall acc: bool, l: list tensor, s: graph_state. 
+    acc -> 
+        match l with
+        | Nil -> true
+        | Cons x xs -> (f s) acc x /\ all_init s xs
+        end
+
+(* True if operation op is executable in state s *)
+let op_ready (s: graph_state) (op: operation) : bool
+ensures { result = true -> op_ready s op } 
+=
+    (* An operation is ready if all its inputs tensors are initialized *)
+    fold_left  (f s) true op.oi 
+        
 
 (* Define the exception for uninitialized tensors (not used) *)
 exception TensorNotInitialized
+
 
 (* Fold with two parameters *)
 let rec fold_left2 (f: 'acc -> 'a -> 'b -> 'acc) (acc: 'acc) (l1: list 'a) (l2: list 'b) : 'acc 
@@ -115,35 +163,69 @@ variant { l1 }
 | _, _ -> absurd
 end
 
-(* Returns the graph state after eeuting one operation *)
+
+
+(* Introduced to set the value of a tensor in the state *)
+let ghost myset (s: graph_state)(t)(v) : graph_state 
+    (* The value of the tensor is set to v in the state st *)
+    (* The tensor is initialized after the operation *)
+    requires { 
+        v <> None
+    }
+    ensures { 
+        is_initialized result t
+    }
+    =
+    Map.set s t v
+
+(* Returns the graph state after executing one operation *)
 let ghost exec_op (s: graph_state) (op: operation) : graph_state
 requires { op_ready s op }
 requires { length op.oi = input_arity op.ope }
 requires { length op.ou = output_arity op.ope } 
-ensures {
-    (* The result is such that the ouput tensors have the value computed by applying the operator on its inputs tensors *)
-    forall i: int. 0 <= i < length op.ou ->
-        let input_values = Map.map (fun t -> Map.get s t) op.oi in
-            Map.get result (nth i op.ou) = nth i (eval_operator op.ope input_values)
-} 
+    (* All output tensors are set *)
+ensures { 
+    forall t: tensor. 
+        mem t op.ou -> is_initialized result t
+}
 =
     (* the values of tensors that are inputs to an operation *)
-    let vals = map (fun t -> Map.get s t) op.oi in 
+    let inputs = map (fun t -> Map.get s t) op.oi in 
+        assert { forall v.  mem v inputs -> v <> None  };
     (* the values of all outputs after evaluation *)
-    let results = eval_operator op.ope vals in 
-    (* the updated state *)
-    fold_left2 (fun st t v -> Map.set st t v) s op.ou results 
+    let outputs = eval_operator op.ope inputs in 
+        assert { forall v.  mem v outputs -> v <> None  };
+        (* the updated state *)
+        fold_left2 (myset) s op.ou outputs 
 
-(* Fold implementation with one parameters *)
-let rec fold_left (f: 'a -> 'b -> 'a) (acc: 'a) (l: list 'b) : 'a
-  variant { l }
-= match l with
-  | Nil -> acc
-  | Cons x xs -> fold_left f (f acc x) xs
-  end
+
+(* All input tensors are initialized *)
+predicate input_initialized (g: graph) (s: graph_state) =
+forall t.
+    mem t g.gi ->
+    is_initialized s t
+
+(* All output tensors are initialized *)
+predicate outputs_initialized (g: graph) (s: graph_state) =
+forall t.
+    mem t g.go ->
+    is_initialized s t
+
+
+(*  Execute the complete graph. 
+    Returns the graph state after executing all operations in the graph 
+    The next operation to be executed is chosen non deterministically among the executable operations *)
+let exec_graph (s: graph_state) (g: graph) : graph_state 
+    requires { input_initialized g s} 
+    ensures { outputs_initialized g result}
+    = 
+    let executable_ops = map (fun o -> op_ready s o) g.ops in 
+    s (* dummy implementation *)
+
+
 
 (* Initial tensor state: all tensors are undefined *)
-let ghost initial_state (g: graph) : graph_state =
+let ghost set_initial_state (g: graph) : graph_state =
     fold_left (fun s t -> Map.set s t None) (Const.const None) g.tensors
 
 
@@ -173,11 +255,7 @@ predicate no_free_tensor (g: graph) =
             exists op. 
                 not mem op g.ops \/ mem t op.ou
 
-(* After execution, all outputs must have values *)
-predicate outputs_have_values (g: graph) (s: graph_state) =
-forall t.
-    mem t g.go ->
-    is_initialized s t
+
 
 
 end

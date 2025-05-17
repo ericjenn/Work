@@ -1,0 +1,51 @@
+type value = int
+
+type tensor = int
+
+type graph_state = int -> (int) option
+
+type operator
+
+let input_arity (_: operator) : int = 3
+
+let output_arity (_: operator) : int = 2
+
+let rec map : type a b. (a -> b) -> (a list) ->  (b list) =
+  fun f l -> match l with
+    | [] -> [] 
+    | x :: xs -> f x :: map f xs
+
+let rec make_list : type a. a -> (int) ->  (a list) =
+  fun x n -> if n = 0 then []  else x :: make_list x (n - 1)
+
+let eval_operator (op: operator) (inputs: ((int) option) list) :
+  ((int) option) list = make_list (Some 0) (output_arity op)
+
+type operation = {
+  ope: operator;
+  oi: (int) list;
+  ou: (int) list;
+  }
+
+type graph = {
+  gi: (int) list;
+  go: (int) list;
+  tensors: (int) list;
+  ops: operation list;
+  }
+
+exception TensorNotInitialized
+
+let rec fold_left2 :
+  type a b acc. (acc -> (a -> (b -> acc))) -> acc -> (a list) -> (b list) -> 
+                acc =
+  fun f acc l1 l2 -> match (l1, l2) with
+    | ([], []) -> acc
+    | (x :: xs, y :: ys) -> fold_left2 f (f acc x y) xs ys
+    | (_, _) -> assert false (* absurd *)
+
+let rec fold_left : type a b. (a -> (b -> a)) -> a -> (b list) ->  a =
+  fun f acc l -> match l with
+    | [] -> acc
+    | x :: xs -> fold_left f (f acc x) xs
+

@@ -1,0 +1,24 @@
+{
+  "profile": [ { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 } ],
+  "proofs": {
+    "OldGraph": {
+      "add_node": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "find_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.024 },
+      "find_output": { "prover": "alt-ergo@2.6.1", "time": 0.018 },
+      "fold_left": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "fold_left_and": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "get_all_free_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.016 },
+      "get_all_inputs": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
+      "get_all_outputs": { "prover": "alt-ergo@2.6.1", "time": 0.012 },
+      "get_executable_nodes": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "is_executable": { "prover": "alt-ergo@2.6.1", "time": 0.007 },
+      "list_diff": { "prover": "alt-ergo@2.6.1", "time": 0.021 },
+      "map": { "prover": "alt-ergo@2.6.1", "time": 0.017 },
+      "mem_concrete": { "prover": "alt-ergo@2.6.1", "time": 0.018 },
+      "mem_node": { "prover": "alt-ergo@2.6.1", "time": 0.021 },
+      "remove_duplicates": { "prover": "alt-ergo@2.6.1", "time": 0.03 },
+      "remove_duplicates_1": { "prover": "alt-ergo@2.6.1", "time": 0.027 },
+      "tensor_state": { "prover": "alt-ergo@2.6.1", "time": 0.023 }
+    }
+  }
+}

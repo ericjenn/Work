@@ -17,7 +17,8 @@ lib:
 	why3 extract -D ocaml64 -o lib/extract --modular -L . -D tensor.drv tensor.Tensor
 	why3 extract -D ocaml64 -o lib/extract --modular -L . -D tensor.drv opwhere.Where
 	why3 extract -D ocaml64 -o lib/extract --modular -L . -D tensor.drv opmatrix.Matrix
-	why3 extract -D ocaml64 -o lib/extract --modular -L . -D tensor.drv eric.Graph
+	why3 extract -D ocaml64 -o lib/extract --modular -L . -D tensor.drv onnxgraph.Graph
+	
 	dune build
 
 test:

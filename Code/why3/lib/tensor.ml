@@ -3,7 +3,7 @@
 module S = Tensor__Shape
 module I = Tensor__Index
 module T = Tensor__Tensor
-module G = Eric__Graph
+module G = graph__Graph
 
 type 'a tensor = 'a T.tensor
 let dim = T.dim

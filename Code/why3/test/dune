@@ -1,4 +1,4 @@
 (tests
-  (names matrix where graph)
+  (names matrix where onnx-graph)
   (flags ("-open" "Tensorlib"))
   (libraries tensorlib))
