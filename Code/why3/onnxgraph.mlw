@@ -100,14 +100,18 @@ type graph = {
     ops: list operation; (* graph operations *)
 }
 
+(* ------------------------------------------------------------------------- *)    
 (* True if a tensor t is initialized in state s. *)
+(* ------------------------------------------------------------------------- *)    
 predicate is_initialized (s: graph_state) (t: tensor) =
     match Map.get s t with
     | Some _ -> true
     | None -> false
 end
 
+(* ------------------------------------------------------------------------- *)    
 (* True if a tensor t is initialized in state s. *)
+(* ------------------------------------------------------------------------- *)    
 let is_initialized (s: graph_state) (t: tensor) : bool 
 ensures { result = is_initialized s t }
 =
@@ -116,19 +120,22 @@ ensures { result = is_initialized s t }
     | None -> false
     end
 
+(* ------------------------------------------------------------------------- *)    
 (* True if operation op is executable in state s *)
+(* ------------------------------------------------------------------------- *)    
 predicate op_ready (s: graph_state) (op: operation) =
     (* An operation is ready if all its inputs tensors are initialized *)
     forall t: tensor. 
         mem t op.oi -> is_initialized s t
 
-(* ##### Demonstration par récurrrence for op_read (that uses fold_left) ##### *)
-(* I want to prove that the fold_left function is equivalent to the recursive definition of the predicate. *) 
+
+(* ------------------------------------------------------------------------- *)
+(* Essai pour aider le prouveur... *)
+(* ------------------------------------------------------------------------- *)
 
 predicate all_init (s: graph_state) (l: list tensor) = 
     forall t: tensor. mem t l -> is_initialized s t
     
-
 function f (s: graph_state) (acc: bool)  (t: tensor) : bool =
   acc && is_initialized s t
 
@@ -145,7 +152,7 @@ lemma preservation :
 
 
 (* ------------------------------------------------------------------------- *)
-(* Simple test *)
+(* Test simple : échec de la preuve *)
 (* ------------------------------------------------------------------------- *)
 predicate all_true (l: list bool)  = forall b: bool. mem b l -> b = true
 
@@ -155,8 +162,8 @@ axiom fold_left_and_equiv_all_true:
     fold_left Bool.andb true l = true <-> all_true l
     
 (* ------------------------------------------------------------------------- *)    
-
 (* True if operation op is executable in state s *)
+(* ------------------------------------------------------------------------- *)    
 (* Note that the ensures clause only states that the result is true if the operation is ready. 
    It does not state that the result is false if the operation is not ready. *)
 let op_ready (s: graph_state) (op: operation) : bool
@@ -169,8 +176,9 @@ ensures { result = true -> op_ready s op }
 (* Define the exception for uninitialized tensors (not used) *)
 exception TensorNotInitialized
 
-
+(* ------------------------------------------------------------------------- *)    
 (* Fold with two parameters *)
+(* ------------------------------------------------------------------------- *)    
 let rec fold_left2 (f: 'acc -> 'a -> 'b -> 'acc) (acc: 'acc) (l1: list 'a) (l2: list 'b) : 'acc 
 requires { length l1 = length l2 }
 variant { l1 }
@@ -181,8 +189,9 @@ variant { l1 }
 end
 
 
-
-(* Introduced to set the value of a tensor in the state *)
+(* ------------------------------------------------------------------------- *)    
+(* Introduced to set the value of a tensor in the graph state *)
+(* ------------------------------------------------------------------------- *)    
 let ghost myset (s: graph_state)(t)(v) : graph_state 
     (* The value of the tensor is set to v in the state st *)
     (* The tensor is initialized after the operation *)
@@ -195,7 +204,9 @@ let ghost myset (s: graph_state)(t)(v) : graph_state
     =
     Map.set s t v
 
+(* ------------------------------------------------------------------------- *)    
 (* Returns the graph state after executing one operation *)
+(* ------------------------------------------------------------------------- *)    
 let ghost exec_op (s: graph_state) (op: operation) : graph_state
 requires { op_ready s op }
 requires { length op.oi = input_arity op.ope }
@@ -215,23 +226,27 @@ ensures {
         (* the updated state *)
         fold_left2 (myset) s op.ou outputs 
 
-
+(* ------------------------------------------------------------------------- *)    
 (* All input tensors are initialized *)
+(* ------------------------------------------------------------------------- *)    
 predicate input_initialized (g: graph) (s: graph_state) =
 forall t.
     mem t g.gi ->
     is_initialized s t
 
+(* ------------------------------------------------------------------------- *)    
 (* All output tensors are initialized *)
+(* ------------------------------------------------------------------------- *)    
 predicate outputs_initialized (g: graph) (s: graph_state) =
 forall t.
     mem t g.go ->
     is_initialized s t
 
-
+(* ------------------------------------------------------------------------- *)    
 (*  Execute the complete graph. 
     Returns the graph state after executing all operations in the graph 
     The next operation to be executed is chosen non deterministically among the executable operations *)
+(* ------------------------------------------------------------------------- *)    
 let exec_graph (s: graph_state) (g: graph) : graph_state 
     requires { input_initialized g s} 
     ensures { outputs_initialized g result}
@@ -240,31 +255,38 @@ let exec_graph (s: graph_state) (g: graph) : graph_state
     s (* dummy implementation *)
 
 
-
+(* ------------------------------------------------------------------------- *)    
 (* Initial tensor state: all tensors are undefined *)
+(* ------------------------------------------------------------------------- *)    
 let ghost set_initial_state (g: graph) : graph_state =
     fold_left (fun s t -> Map.set s t None) (Const.const None) g.tensors
 
-
+(* ------------------------------------------------------------------------- *)    
 (* SSA constraint: a tensor appears in the output of at most one op *)
+(* ------------------------------------------------------------------------- *)    
 predicate ssa (g: graph) =
     forall t: tensor.
         length (map (fun op -> mem t op.ou) g.ops) <= 1
 
-
+(* ------------------------------------------------------------------------- *)    
 (* Each graph input must be used by at least of one op *)
+(* ------------------------------------------------------------------------- *)    
 predicate inputs_used (g: graph) =
 forall t: tensor.
     mem t g.gi ->
         exists op. mem op g.ops /\ mem t op.oi
 
+(* ------------------------------------------------------------------------- *)    
 (* Each graph output must be produced by one op *)
+(* ------------------------------------------------------------------------- *)    
 predicate outputs_defined (g: graph) =
 forall t: tensor.
     mem t g.go ->
         exists op. mem op g.ops /\ mem t op.ou
 
+(* ------------------------------------------------------------------------- *)    
 (* Each tensor is either a graph input or is in the output map of at least one operation *)
+(* ------------------------------------------------------------------------- *)    
 predicate no_free_tensor (g: graph) =
     forall t: tensor.
         mem t g.tensors ->
