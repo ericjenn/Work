@@ -2,8 +2,10 @@
   "profile": [ { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 } ],
   "proofs": {
     "Graph": {
+      "as_spec_get": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
+      "as_spec_set": null,
       "eval_operator": { "prover": "alt-ergo@2.6.1", "time": 0.011 },
-      "exec_graph": { "prover": "alt-ergo@2.6.1", "time": 0.332 },
+      "exec_graph": { "prover": "alt-ergo@2.6.1", "time": 0.517 },
       "exec_op": {
         "tactic": "split_vc",
         "children": [
@@ -16,13 +18,15 @@
           { "prover": "alt-ergo@2.6.1", "time": 0.655 }
         ]
       },
-      "fold_left": { "prover": "alt-ergo@2.6.1", "time": 0.009 },
+      "fget": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "fold_left": { "prover": "alt-ergo@2.6.1", "time": 0.04 },
       "fold_left2": { "prover": "alt-ergo@2.6.1", "time": 0.023 },
+      "fset": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
       "is_initialized": { "prover": "alt-ergo@2.6.1", "time": 0.012 },
       "make_list": { "prover": "alt-ergo@2.6.1", "time": 0.018 },
       "map": { "prover": "alt-ergo@2.6.1", "time": 0.014 },
-      "myset": { "prover": "alt-ergo@2.6.1", "time": 0.012 },
-      "op_ready": { "prover": "alt-ergo@2.6.1", "time": 0.407 },
+      "myset2": { "prover": "alt-ergo@2.6.1", "time": 0.012 },
+      "op_ready": { "prover": "alt-ergo@2.6.1", "time": 0.51 },
       "preservation": null,
       "set_initial_state": { "prover": "alt-ergo@2.6.1", "time": 0.015 }
     }

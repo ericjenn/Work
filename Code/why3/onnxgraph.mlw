@@ -13,6 +13,7 @@ use list.NthNoOpt
 use map.Const
 use bool.Bool
 
+(* A tensor value is just an int *)
 type value = int
 
 
@@ -27,6 +28,82 @@ type graph_state = Map.map tensor (option value)
 (* Abstract operator type  *)
 type operator
 
+
+
+(* ------------------------------------------------------------------------- *)
+
+  (* === Executable finite map === *)
+  type fmap = list (tensor, option value)
+
+function fget_logic (m: list (tensor, option value)) (k: tensor) : option value =
+  match m with
+  | Nil -> None
+  | Cons (k', v) tl -> if k = k' then v else fget_logic tl k
+  end
+
+
+  let rec fget (m: fmap) (k: tensor) : option value =
+  ensures { result = fget_logic m k}
+  variant { m }
+    match m with
+    | Nil -> None
+    | Cons (k', v) tl -> if k = k' then v else fget tl k
+    end
+
+
+  function fset_logic (m: fmap) (k: tensor) (v: option value) : fmap =
+    match m with
+    | Nil -> Cons (k, v) Nil
+    | Cons (k', v') tl ->
+        if k = k' then Cons (k, v) tl
+        else Cons (k', v') (fset_logic tl k v)
+    end
+
+  let rec fset (m: fmap) (k: tensor) (v: option value) : fmap =
+  ensures { result = fset_logic m k v}
+  
+  variant { m }
+    match m with
+    | Nil -> Cons (k, v) Nil
+    | Cons (k', v') tl ->
+        if k = k' then Cons (k, v) tl
+        else Cons (k', v') (fset tl k v)
+    end
+
+
+  (* === Logical projection from fmap to abstract map === *)
+  function as_spec (m: fmap): Map.map tensor (option value) =
+    fun k -> fget_logic m k 
+
+    
+  lemma get_set_eq:
+    forall m: fmap, k: tensor, v: option value.
+      fget_logic (fset_logic m k v) k = v
+
+  lemma get_set_neq:
+    forall m: fmap, k1 k2: tensor, v: option value.
+      k1 <> k2 ->
+      fget_logic (fset_logic m k2 v) k1 = fget_logic m k1
+
+
+
+(* My get function behaves as the spec. *)
+  lemma as_spec_get:
+    forall m: fmap, k: tensor.
+      match fget_logic m k with
+      | Some v -> Map.get (as_spec m) k = Some(v)
+      | None -> true
+      end
+
+(* Link set function behaves as the spec *)
+  lemma as_spec_set:
+    forall m: fmap, k: tensor, v: option value.
+      as_spec (fset_logic m k v) = Map.set (as_spec m) k v
+
+
+
+ (* --------------------------------------------------------------------------- *)
+ 
 
 function input_arity (_: operator) : int = 3
 function output_arity (_: operator) : int = 2
@@ -189,10 +266,11 @@ variant { l1 }
 end
 
 
+
 (* ------------------------------------------------------------------------- *)    
 (* Introduced to set the value of a tensor in the graph state *)
 (* ------------------------------------------------------------------------- *)    
-let ghost myset (s: graph_state)(t)(v) : graph_state 
+let ghost myset2 (s: graph_state)(t)(v) : graph_state 
     (* The value of the tensor is set to v in the state st *)
     (* The tensor is initialized after the operation *)
     requires { 
@@ -202,7 +280,7 @@ let ghost myset (s: graph_state)(t)(v) : graph_state
         is_initialized result t
     }
     =
-    Map.set s t v
+    set s t v
 
 (* ------------------------------------------------------------------------- *)    
 (* Returns the graph state after executing one operation *)
@@ -224,7 +302,7 @@ ensures {
     let outputs = eval_operator op.ope inputs in 
         assert { forall v.  mem v outputs -> v <> None  };
         (* the updated state *)
-        fold_left2 (myset) s op.ou outputs 
+        fold_left2 (myset2) s op.ou outputs 
 
 (* ------------------------------------------------------------------------- *)    
 (* All input tensors are initialized *)
