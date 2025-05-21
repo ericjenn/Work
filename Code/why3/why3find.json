@@ -3,7 +3,7 @@
   "time": 1,
   "depth": 4,
   "packages": [],
-  "provers": [ "alt-ergo@2.6.1" ],
+  "provers": [ "alt-ergo@2.4.2" ],
   "tactics": [ "split_vc" ],
   "drivers": [],
   "warnoff": []
