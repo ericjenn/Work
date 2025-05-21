@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.0.6">
+  <diagram name="Page-1" id="4uCzs1a2pAy22MeJjbTX">
+    <mxGraphModel dx="1678" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-12" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="40" width="570" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-24" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="70" width="270" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="570" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-3" value="Toolchain" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="350" y="40" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-8" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="270" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-9" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="70" width="270" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-10" value="Development&amp;nbsp; process" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="270" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-11" value="Product" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="440" y="70" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-13" value="Artifacts" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="930" y="40" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-14" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="70" width="270" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-16" value="Generation process" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="685" y="70" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-17" value="Product" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="910" y="70" width="270" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-19" value="Liveness&lt;div&gt;Perenniality&lt;/div&gt;&lt;div&gt;Community support&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-20" value="Maturity&lt;div&gt;Openness&lt;/div&gt;&lt;div&gt;Cost&lt;/div&gt;&lt;div&gt;Certifiability&lt;/div&gt;&lt;div&gt;Reliability&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="340" y="120" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-21" value="Traceability&lt;div&gt;Optimization feature&lt;/div&gt;&lt;div&gt;Model support&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="640" y="110" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="bxKFUoJIUqutIl5XHbVQ-26" value="&lt;div&gt;Timing performance&lt;/div&gt;Memory usage" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="920" y="120" width="160" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
