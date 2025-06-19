@@ -5,23 +5,28 @@
   ],
   "proofs": {
     "Graph": {
+      "and_list": { "prover": "alt-ergo@2.4.2", "time": 0.02 },
+      "and_true_true": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.02 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.013 }
+        ]
+      },
       "as_spec_get": { "prover": "alt-ergo@2.4.2", "time": 0.01 },
       "as_spec_set": { "prover": "alt-ergo@2.4.2", "time": 0.009 },
       "eval_operator": { "prover": "alt-ergo@2.4.2", "time": 0.014 },
-      "exec_graph": {
-        "tactic": "split_vc",
-        "children": [ { "prover": "alt-ergo@2.4.2", "time": 1.2 } ]
-      },
+      "exec_graph": null,
       "exec_op": {
         "tactic": "split_vc",
         "children": [
           null,
-          { "prover": "alt-ergo@2.4.2", "time": 0.017 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.015 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.013 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.532 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.013 },
-          { "prover": "alt-ergo@2.4.2", "time": 1.2 }
+          { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.011 },
+          null,
+          { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+          null
         ]
       },
       "fget": {
@@ -47,19 +52,69 @@
       },
       "fold_left": { "prover": "alt-ergo@2.4.2", "time": 0.014 },
       "fold_left2": { "prover": "alt-ergo@2.4.2", "time": 0.023 },
+      "fold_left_and": {
+        "tactic": "split_vc",
+        "children": [
+          {
+            "tactic": "split_vc",
+            "children": [
+              {
+                "tactic": "split_vc",
+                "children": [
+                  { "prover": "alt-ergo@2.4.2", "time": 0.012 }, null
+                ]
+              },
+              {
+                "tactic": "split_vc",
+                "children": [
+                  { "prover": "alt-ergo@2.4.2", "time": 0.014 }, null
+                ]
+              }
+            ]
+          },
+          { "prover": "alt-ergo@2.4.2", "time": 0.013 }
+        ]
+      },
       "fold_left_and_equiv_all_true": null,
-      "fset": { "prover": "alt-ergo@2.4.2", "time": 0.027 },
+      "fset": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.4.2", "time": 0.01 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.145 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.4.2", "time": 0.01 },
+              {
+                "tactic": "split_vc",
+                "children": [
+                  { "prover": "alt-ergo@2.4.2", "time": 0.021 },
+                  { "prover": "alt-ergo@2.4.2", "time": 0.034 }
+                ]
+              }
+            ]
+          }
+        ]
+      },
       "get_set_eq": null,
       "get_set_neq": null,
-      "is_initialized": { "prover": "alt-ergo@2.4.2", "time": 0.017 },
+      "is_initialized": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.4.2", "time": 0.013 },
+              { "prover": "alt-ergo@2.4.2", "time": 0.016 }
+            ]
+          }
+        ]
+      },
       "make_list": { "prover": "alt-ergo@2.4.2", "time": 0.021 },
       "map": { "prover": "alt-ergo@2.4.2", "time": 0.019 },
       "myset2": { "prover": "alt-ergo@2.4.2", "time": 0.012 },
-      "op_ready": {
-        "tactic": "split_vc",
-        "children": [ { "prover": "alt-ergo@2.4.2", "time": 1.1 } ]
-      },
-      "preservation": null,
+      "node_ready": null,
       "set_initial_state": { "tactic": "split_vc", "children": [] }
     }
   }

@@ -13,41 +13,45 @@ use list.NthNoOpt
 use map.Const
 use bool.Bool
 
+
 (* A tensor value is just an int [preliminary]*)
 type value = int
 
 (* A tensor is designated by an integer id [preliminary] *)
-(* [T02a] *)
+(* In the actual implementation, a tensor is designted by a string *)
+(* [TXX] *)
 type tensor = int
 
 (* The state of a graph is a mapping from the set of tensors to a set optional values  *)
-(* [T02b] *)
+(* [TXX] *)
 type graph_state = Map.map tensor (option value)
 
-(* Abstract operator type  *)
-type operator
+(* An operator *)
+(* [TODO] The inputs / outputs of an operator are typed. *)
+(* The binding proposed by a node must comply with these typing constraints *)
+type operator 
 
 (* A node is an application of an operator *)
-(* [T03a], [T03b] *)
+(* [TXX] *)
 type node = {
-    ope: operator; (* The operator used by the node *)
-    oi: list tensor; (* Binding of operator's inputs to tensors, position-wise *)
-    ou: list tensor; (* Binding of operator's output to tensors, position-wise *)
+    ope: operator; (* The operator referred to by the node *)
+    oi: list tensor; (* Input tensors, position-wise *)
+    ou: list tensor; (* Output tensors, position-wise *)
 }
 
-(* A graph is a list of tensors and nodes *)
-(*[T01] *)
+(* A graph is a list of tensors and nodes + a list of input and output tensors *)
+(* [TXX] *)
 type graph = {
-    gi: list tensor; (* Graph inputs *)
-    go: list tensor; (* Graph outputs *)
-    tensors: list tensor; (* Graph tensors *)
-    ops: list node; (* graph nodes *)
+    gi: list tensor;        (* graph inputs *)
+    go: list tensor;        (* graph outputs *)
+    tensors: list tensor;   (* graph tensors *)
+    ops: list node;         (* graph nodes *)
 }
-
 
 (* --------------------------------------------------------------------------- *)
 (* Utilities *)
 (* --------------------------------------------------------------------------- *)
+
 (* Create t list of n elements with the same value x *)
 let rec make_list (x: 'a) (n: int) : list 'a
 requires { n >= 0 }
@@ -62,28 +66,42 @@ variant { n }
         Cons x (make_list x (n - 1))
 
 (* Fold implementation with one parameters *)
-let rec fold_left (f: 'a -> 'b -> 'a) (acc: 'a) (l: list 'b) : 'a
+(*[TODO] Ensures is missing... *)
+let rec fold_left (f: 'acc -> 'a -> 'acc) (acc: 'acc) (l: list 'a) : 'acc
   variant { l }
 = match l with
   | Nil -> acc
   | Cons x xs -> fold_left f (f acc x) xs
   end
 
+(* Fold implementation with two parameters *)   
+(* [TODO] See fold_product in List*)
+let rec fold_left2  (f: 'acc -> 'a -> 'b -> 'acc) 
+                    (acc: 'acc) 
+                    (l1: list 'a) 
+                    (l2: list 'b) : 'acc 
+    requires { length l1 = length l2 }
+    variant { l1 }
+    = match l1, l2 with
+    | Nil, Nil -> acc
+    | Cons x xs, Cons y ys -> fold_left2 f (f acc x y) xs ys
+    | _, _ -> absurd
+    end
 
 (* ------------------------------------------------------------------------- *)
 (* Simple implementation of a map (using a list)                             *)
+(* Used to associate a value to a tensor                                     *)
 (* ------------------------------------------------------------------------- *)
 
 type fmap = list (tensor, option value)
 
 (* Get an item from the map (spec)*)
-(* Logic functions must be total, so we return None if the tensor is not in 
-   the map. *)
-   (* /\ I wuld like to specif=y this function as if exists k,v . mem (k,v) m then v else None *)
+(* Logic functions must be total, so we return None if the tensor is not in the map. *)
+   (* /\ I wuld like to specify this function as if exists k,v . mem (k,v) m then v else None *)
 function fget_logic (m: fmap) (k: tensor) : option value =
   match m with
     | Nil -> None
-    | Cons (k', v) tl -> if k = k' then v else fget_logic tl k
+    | Cons (k', v) xs -> if k = k' then v else fget_logic xs k
     end 
 
 
@@ -97,21 +115,25 @@ let rec fget (m: fmap) (k: tensor) : option value =
     variant { m }
     match m with
     | Nil -> absurd
-    | Cons (k', v) tl -> if k = k' then v else fget tl k
+    | Cons (k', v) xs -> 
+        if k = k' then v 
+        else fget xs k
     end
 
 (* Set an item in the map (spec) *)
 function fset_logic (m: fmap) (k: tensor) (v: option value) : fmap =
     match m with
     | Nil -> Cons (k, v) Nil
-    | Cons (k', v') tl ->
-        if k = k' then Cons (k, v) tl
-        else Cons (k', v') (fset_logic tl k v)
+    | Cons (k', v') xs ->
+        if k = k' then Cons (k, v) xs
+        else Cons (k', v') (fset_logic xs k v)
     end
 
 (* Set an item in the map (imp) *)
 let rec fset (m: fmap) (k: tensor) (v: option value) : fmap =
-    ensures { result = fset_logic m k v}
+    ensures { result = fset_logic m k v }  (* The value is correctly set *)
+    ensures{ forall k', v'. mem (k', v') m  /\ k' <> k -> 
+        exists k'', v''. mem (k'',v'') result /\ v'=v''}   (* The other values are not modified *)
     variant { m }
     match m with
     | Nil -> Cons (k, v) Nil
@@ -120,21 +142,27 @@ let rec fset (m: fmap) (k: tensor) (v: option value) : fmap =
         else Cons (k', v') (fset tl k v)
     end
 
-(* Logical projection from fmap to abstract map *)
-function as_spec (m: fmap): Map.map tensor (option value) =
-    fun k -> fget_logic m k 
-
 (* If I set (k,v) in the map, then get(k) shall return v *)
 lemma get_set_eq:
     forall m: fmap, k: tensor, v: option value.
         fget_logic (fset_logic m k v) k = v
 
-(* When I set (k,v) in the map, then the rest of the map must not be changed,
+(* When I set (k,v) in the map, then the rest of the map must not change,
 i.e., for any other key k', the value associated with k' shall not change *)
 lemma get_set_neq:
     forall m: fmap, k1 k2: tensor, v: option value.
         k1 <> k2 ->
         fget_logic (fset_logic m k2 v) k1 = fget_logic m k1
+
+(* ------------------------------------------------------------------------- *)
+(* Link ("collage") between the abstract map and the implementation map      *)
+(* ------------------------------------------------------------------------- *)
+
+(* Logical projection from fmap to abstract map *)
+function as_spec (m: fmap): Map.map tensor (option value) =
+    fun k -> fget_logic m k 
+
+
 
 (* The get implementation of set complies with the specification *)
 lemma as_spec_get:
@@ -155,7 +183,7 @@ lemma as_spec_set:
 (* Operators *)
 (* --------------------------------------------------------------------------- *)
 
-(* For test purposes, the arity of operator is fixed to3 inputs and 2 outputs *)
+(* For test purposes, the arity of operator is fixed to 3 inputs and 2 outputs *)
 function input_arity (_: operator) : int = 3
 function output_arity (_: operator) : int = 2
 
@@ -170,20 +198,18 @@ let output_arity (_: operator) : int = 2
 function eval_operator (op: operator) (inputs: list (option value)) : list (option value) 
 
 (* Function modeling the behavior of an operator *)
+(* [TODO] Replace with actual operators *)
 let eval_operator (op: operator) (inputs: list (option value)) : list (option value) 
-requires { length inputs = input_arity op }
-requires { output_arity op > 0}
-(* All outputs are initialized *)
-ensures { forall i. mem i result -> i <> None } 
+requires { length inputs = input_arity op } (* The node provides as ùany iputs as needed by the operator *)
+ensures { forall i. mem i result -> i <> None }  (* All outputs are initialized *)
 ensures { length result = output_arity op } (* There is one value per output tensor *)
 =
-    (* This is a dummy implementation that return a list of identical values *)
+    (* This is a dummy implementation that return the appropriate number of identical values *)
     make_list (Some 0) (output_arity op)
 
 
-
 (* --------------------------------------------------------------------------- *)
-(* Map implementation [preliminar]y] *)
+(* Map implementation [preliminary] *)
 (* --------------------------------------------------------------------------- *)
 let rec map (f: 'a -> 'b) (l: list 'a) : list 'b
 ensures { length result = length l }
@@ -194,11 +220,10 @@ variant { l }
 end
 
 
-
 (* ------------------------------------------------------------------------- *)    
 (* True if a tensor t is initialized in state s. *)
 (* ------------------------------------------------------------------------- *)    
-predicate is_initialized (s: graph_state) (t: tensor) =
+predicate tensor_is_initialized (s: graph_state) (t: tensor) =
     match Map.get s t with
     | Some _ -> true
     | None -> false
@@ -208,43 +233,12 @@ end
 (* True if a tensor t is initialized in state s. *)
 (* ------------------------------------------------------------------------- *)    
 let is_initialized (s: graph_state) (t: tensor) : bool 
-ensures { result = is_initialized s t }
+ensures { result = tensor_is_initialized s t }
 =
     match Map.get s t with
     | Some _ -> true
     | None -> false
     end
-
-(* ------------------------------------------------------------------------- *)    
-(* True if a node is executable in state s *)
-(* ------------------------------------------------------------------------- *)    
-predicate op_ready (s: graph_state) (op: node) =
-    (* A node is ready if all its inputs tensors are initialized *)
-    forall t: tensor. 
-        mem t op.oi -> is_initialized s t
-
-
-(* ------------------------------------------------------------------------- *)
-(* Essai pour aider le prouveur... *)
-(* ------------------------------------------------------------------------- *)
-
-predicate all_init (s: graph_state) (l: list tensor) = 
-    forall t: tensor. mem t l -> is_initialized s t
-    
-function f (s: graph_state) (acc: bool)  (t: tensor) : bool =
-  acc && is_initialized s t
-
-let  f (s: graph_state) (acc: bool)  (t: tensor) : bool =
-  acc && is_initialized s t
-
-lemma preservation :
-    forall acc: bool, l: list tensor, s: graph_state. 
-    acc -> 
-        match l with
-        | Nil -> true
-        | Cons x xs -> (f s) true x /\ all_init s xs
-        end
-
 
 (* ------------------------------------------------------------------------- *)
 (* /\ !Simple test: a fold-left and on list l is true iff all elements of 
@@ -253,50 +247,57 @@ lemma preservation :
 predicate all_true (l: list bool)  = 
     forall b: bool. mem b l -> b = true
 
-       
-lemma  fold_left_and_equiv_all_true:
+lemma and_true_true:
+    forall a: bool, b: bool.  Bool.andb a b <-> a /\  b
+
+
+let rec fold_left_and (f: bool -> bool -> bool) (acc: bool) (l: list bool) : bool
+ensures{ result = acc /\ all_true l }  
+ensures{ result = false -> acc = false \/ exists x. mem x l /\ x = false }  
+  variant { l }
+= match l with
+  | Nil -> acc
+  | Cons x xs -> fold_left Bool.andb (Bool.andb acc x) xs
+  end
+
+
+goal  fold_left_and_equiv_all_true:
   forall l: list bool.
-    fold_left Bool.andb true l = true <-> all_true l
+    FoldLeft.fold_left Bool.andb true l = true <-> all_true l
     
+
+
+let rec are_initialized ( s: graph_state l: list bool) : bool = 
+ensures{ result = all_true l }  
+variant {l} 
+match l with 
+| Nil -> true
+| Cons x xs -> Bool.andb x (and_list xs)
+end
+
 (* ------------------------------------------------------------------------- *)    
 (* True if node op is executable in state s *)
 (* ------------------------------------------------------------------------- *)    
-(* Note that the ensures clause only states that the result is true if the node is ready. 
-   It does not state that the result is false if the node is not ready. *)
-let op_ready (s: graph_state) (op: node) : bool
-ensures { result = true -> op_ready s op } 
-=
+predicate node_is_ready (s: graph_state) (op: node) =
     (* A node is ready if all its inputs tensors are initialized *)
-    fold_left  (f s) true op.oi 
-        
+    forall t: tensor. 
+        mem t op.oi -> tensor_is_initialized s t
 
-(* ------------------------------------------------------------------------- *)    
-(* Fold with two parameters *)
-(* ------------------------------------------------------------------------- *)    
-let rec fold_left2  (f: 'acc -> 'a -> 'b -> 'acc) 
-                    (acc: 'acc) 
-                    (l1: list 'a) 
-                    (l2: list 'b) : 'acc 
-    requires { length l1 = length l2 }
-    variant { l1 }
-    = match l1, l2 with
-    | Nil, Nil -> acc
-    | Cons x xs, Cons y ys -> fold_left2 f (f acc x y) xs ys
-    | _, _ -> absurd
-    end
+let node_ready (s: graph_state) (op: node) : bool
+ensures { result = true <-> node_is_ready s op } 
+=
+    let  f (s: graph_state) (acc: bool)  (t: tensor) : bool = acc && is_initialized s t in 
+        (* A node is ready if all its inputs tensors are initialized *)
+        fold_left (f s) true op.oi 
+        
 
 (* ------------------------------------------------------------------------- *)    
 (* Introduced to set the value of a tensor in the graph state *)
 (* ------------------------------------------------------------------------- *)    
 let ghost myset2 (s: graph_state)(t)(v) : graph_state 
     (* The value of the tensor is set to v in the state st *)
-    requires { 
-        v <> None (* We never assign a None value during the execution of 
-        a node *)
-    }
-    ensures { 
-        is_initialized result t
-    }
+    requires { v <> None}  (* We never assign a None value during the execution of a node *)
+    ensures { tensor_is_initialized result t  }
     =
     set s t v
 
@@ -304,13 +305,13 @@ let ghost myset2 (s: graph_state)(t)(v) : graph_state
 (* Returns the graph state after executing one node *)
 (* ------------------------------------------------------------------------- *)    
 let ghost exec_op (s: graph_state) (op: node) : graph_state
-requires { op_ready s op }
+requires { node_is_ready s op }
 requires { length op.oi = input_arity op.ope }
 requires { length op.ou = output_arity op.ope } 
     (* All output tensors are set *)
 ensures { 
     forall t: tensor. 
-        mem t op.ou -> is_initialized result t
+        mem t op.ou -> tensor_is_initialized result t
 }
 =
     (* the values of tensors that are inputs to a node *)
@@ -325,18 +326,18 @@ ensures {
 (* ------------------------------------------------------------------------- *)    
 (* All input tensors are initialized *)
 (* ------------------------------------------------------------------------- *)    
-predicate input_initialized (g: graph) (s: graph_state) =
+predicate all_inputs_are_initialized (g: graph) (s: graph_state) =
 forall t.
     mem t g.gi ->
-    is_initialized s t
+    tensor_is_initialized s t
 
 (* ------------------------------------------------------------------------- *)    
 (* All output tensors are initialized *)
 (* ------------------------------------------------------------------------- *)    
-predicate outputs_initialized (g: graph) (s: graph_state) =
+predicate all_outputs_are_initialized (g: graph) (s: graph_state) =
 forall t.
     mem t g.go ->
-    is_initialized s t
+    tensor_is_initialized s t
 
 (* ------------------------------------------------------------------------- *)    
 (*  Execute the complete graph. 
@@ -345,10 +346,10 @@ forall t.
     executable nodes *)
 (* ------------------------------------------------------------------------- *)    
 let exec_graph (s: graph_state) (g: graph) : graph_state 
-    requires { input_initialized g s} 
-    ensures { outputs_initialized g result}
+    requires { all_inputs_are_initialized g s} 
+    ensures { all_outputs_are_initialized g result}
     = 
-    let executable_ops = map (fun o -> op_ready s o) g.ops in 
+    let executable_ops = map (fun o -> node_ready s o) g.ops in 
     s (* dummy implementation *)
 
 
@@ -397,6 +398,20 @@ predicate no_free_tensor (g: graph) =
             exists op. 
                 not mem op g.ops \/ mem t op.ou
 
+
+
+(* ------------------------------------------------------------------------- *)    
+(* [TXX] The binding done by a node must compl with the operator's interface *)
+(* ------------------------------------------------------------------------- *)    
+
+(* ------------------------------------------------------------------------- *)    
+(* [TXX] The inputs and outputs of a graph must be a subset of the graph's tensor set  *)
+(* ------------------------------------------------------------------------- *)    
+
+
+(* ------------------------------------------------------------------------- *)    
+(* [TXX] Any tensor must be the input and or the ouput of some node (no dangling tensor) *)
+(* ------------------------------------------------------------------------- *)   
 
 
 
