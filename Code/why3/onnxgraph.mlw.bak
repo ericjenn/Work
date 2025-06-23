@@ -482,29 +482,22 @@ ensures { result = true <-> node_is_ready s op }
 (* Graph execution *)
 (* =========================================================================== *)
 
-(* TODO: a tensor shall only appear once in a state : this is a type invariant *)
 let rec assign (s: graph_state) (t: tensor_id) (v: option value) : graph_state
-    requires { v <> None }  (* The value shall not be None *)
+    requires { exists t,v. mem (t,v) s }  (* The tensor exists in the state *)
     ensures { tensor_is_initialized result t } (* The tensor is still initialized after assignment *)
     variant { s }
 =
     match s with
-    | Nil -> Cons (t, v) Nil
+    | Nil -> absurd  (* The tensor must be in the state *)
     | Cons (t', v') xs ->
-        if t = t' then 
-            Cons (t', v) xs
-        else 
-            Cons (t', v') (assign xs t v)
+        if t = t' then Cons (t, v) xs
+        else Cons (t', v') (assign xs t v)
     end
 
-  
+
 let rec assign_list (s: graph_state) (l: list (tensor_id, option value)) : graph_state
-    requires { forall t, v. mem (t, v) l -> 
-        exists t', v'. mem (t', v') s /\ t <> t' \/ v = v' } (* A tensor shall only appear once in an assignment *)
-    requires { forall t, v. mem (t, v) l -> 
-        v <> None }  (* All values shall be different from None *)
-    ensures { forall t, v . mem (t, v) l -> 
-        fget_logic result t = v } (* The value of the assigned tensors are those provided *)
+    requires { forall t, v. mem (t, v) l -> tensor_is_initialized s t }  (* All tensors in the list are initialized in the state *)
+    ensures { forall t, v . mem (t, v) result } (* All tensors in the list are still initialized after assignment *)
     variant { l }
 =
     match l with

@@ -7,11 +7,11 @@
     "Graph": {
       "all_node_with_one_output_ko": {
         "prover": "alt-ergo@2.4.2",
-        "time": 0.033
+        "time": 0.07
       },
       "all_node_with_one_output_ok": {
         "prover": "alt-ergo@2.4.2",
-        "time": 0.017
+        "time": 0.035
       },
       "all_operator_ins_and_outs_ko": {
         "prover": "alt-ergo@2.4.2",
@@ -29,12 +29,34 @@
           { "prover": "alt-ergo@2.4.2", "time": 0.013 }
         ]
       },
-      "are_initialized": { "prover": "alt-ergo@2.4.2", "time": 0.034 },
-      "eval_operator": {
+      "are_initialized": { "prover": "alt-ergo@2.4.2", "time": 0.017 },
+      "assign": {
         "tactic": "split_vc",
         "children": [
           { "prover": "alt-ergo@2.4.2", "time": 0.011 },
           { "prover": "alt-ergo@2.4.2", "time": 0.011 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.237 }
+        ]
+      },
+      "assign_list": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.4.2", "time": 0.013 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.021 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.015 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.4.2", "time": 0.014 }, null
+            ]
+          }
+        ]
+      },
+      "eval_operator": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.4.2", "time": 0.011 },
+          null,
           { "prover": "alt-ergo@2.4.2", "time": 0.008 }
         ]
       },
@@ -44,13 +66,12 @@
         "children": [
           null,
           null,
-          { "prover": "alt-ergo@2.4.2", "time": 0.023 },
           null,
+          { "prover": "alt-ergo@2.4.2", "time": 0.015 },
           { "prover": "alt-ergo@2.4.2", "time": 0.01 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.013 },
-          { "prover": "alt-ergo@2.4.2", "time": 0.016 },
-          null,
           { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+          { "prover": "alt-ergo@2.4.2", "time": 0.011 },
+          null,
           null
         ]
       },
@@ -121,7 +142,6 @@
         "prover": "alt-ergo@2.4.2",
         "time": 0.012
       },
-      "fold_left": { "prover": "alt-ergo@2.4.2", "time": 0.014 },
       "fold_left2": { "prover": "alt-ergo@2.4.2", "time": 0.023 },
       "fold_left_and_equiv_all_true": null,
       "fset": {
@@ -170,17 +190,12 @@
         "prover": "alt-ergo@2.4.2",
         "time": 0.016
       },
+      "init": { "prover": "alt-ergo@2.4.2", "time": 0.012 },
+      "initial_state": null,
       "is_initialized": {
         "tactic": "split_vc",
         "children": [
-          { "prover": "alt-ergo@2.4.2", "time": 0.012 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.4.2", "time": 0.013 },
-              { "prover": "alt-ergo@2.4.2", "time": 0.016 }
-            ]
-          }
+          null, null, { "prover": "alt-ergo@2.4.2", "time": 0.022 }
         ]
       },
       "make_list": { "prover": "alt-ergo@2.4.2", "time": 0.021 },
@@ -188,12 +203,12 @@
       "node_ready": { "prover": "alt-ergo@2.4.2", "time": 0.012 },
       "operator_one_output_ko": { "prover": "alt-ergo@2.4.2", "time": 0.018 },
       "operator_one_output_ok": { "prover": "alt-ergo@2.4.2", "time": 0.014 },
-      "set_initial_state": { "tactic": "split_vc", "children": [] },
       "tensor_is_unique_output_test_ko": null,
       "tensor_is_unique_output_test_ok": {
         "tactic": "split_vc",
         "children": [ { "prover": "alt-ergo@2.4.2", "time": 0.431 } ]
-      }
+      },
+      "zip": { "prover": "alt-ergo@2.4.2", "time": 0.025 }
     }
   }
 }
