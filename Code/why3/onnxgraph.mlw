@@ -481,28 +481,12 @@ ensures { result = true <-> node_is_ready s op }
 (* =========================================================================== *)
 (* Graph execution *)
 (* =========================================================================== *)
-
-(* TODO: a tensor shall only appear once in a state : this is a type invariant *)
-let rec assign (s: graph_state) (t: tensor_id) (v: option value) : graph_state
-    requires { v <> None }  (* The value shall not be None *)
-    ensures { tensor_is_initialized result t } (* The tensor is still initialized after assignment *)
-    variant { s }
-=
-    match s with
-    | Nil -> Cons (t, v) Nil
-    | Cons (t', v') xs ->
-        if t = t' then 
-            Cons (t', v) xs
-        else 
-            Cons (t', v') (assign xs t v)
-    end
-
   
 let rec assign_list (s: graph_state) (l: list (tensor_id, option value)) : graph_state
+    requires { forall t, v. mem (t, v) s -> 
+        exists t', v'. mem (t', v') s /\ t <> t' \/ v = v' } (* A tensor shall only appear once in the state *)
     requires { forall t, v. mem (t, v) l -> 
-        exists t', v'. mem (t', v') s /\ t <> t' \/ v = v' } (* A tensor shall only appear once in an assignment *)
-    requires { forall t, v. mem (t, v) l -> 
-        v <> None }  (* All values shall be different from None *)
+        exists t', v'. mem (t', v') l /\ t <> t' \/ v = v' } (* A tensor shall only appear once in an assignment *)
     ensures { forall t, v . mem (t, v) l -> 
         fget_logic result t = v } (* The value of the assigned tensors are those provided *)
     variant { l }
@@ -510,7 +494,7 @@ let rec assign_list (s: graph_state) (l: list (tensor_id, option value)) : graph
     match l with
     | Nil -> s  (* Nothing to assign *)
     | Cons (t, v) xs ->
-        let s' = assign s t v in
+        let s' = fset s t v in
             assign_list s' xs  (* Assign the value and continue with the rest of the list *)
     end
 
@@ -640,16 +624,3 @@ goal  fold_left_and_equiv_all_true:
     
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
