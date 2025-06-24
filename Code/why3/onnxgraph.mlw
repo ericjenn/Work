@@ -515,10 +515,14 @@ let rec zip (l1: list tensor_id)(l2: list (option value)) : list (tensor_id, opt
 (* Execute one node                                                            *)
 (* --------------------------------------------------------------------------- *)    
 let ghost exec_node (s: graph_state) (n: node) : graph_state
-requires { node_is_ready s n }                  (* The node must be ready to be executed *)
-requires { length n.oi = length n.ope.opi }   (* The number of inputs must match the number of operator's inputs *)
-requires { length n.ou = length n.ope.opo }  (* The number of outputs must match the number of operator's outputs *)
-ensures  { forall t: tensor_id. mem t n.ou -> tensor_is_initialized result t } (* All output tensors are set *)
+(* [T05a] The node must be ready to be executed *)
+requires { node_is_ready s n }               
+(* [T05a] The number of inputs must match the number of operator's inputs *)   
+requires { length n.oi = length n.ope.opi }  
+(* [T03b] The number of outputs must match the number of operator's outputs *)
+requires { length n.ou = length n.ope.opo }  
+(* After execution, all output tensors are set *)
+ensures  { forall t: tensor_id. mem t n.ou -> tensor_is_initialized result t } 
 =
     (* the values of tensors that are inputs to a node *)
     let inputs = map (fun t -> fget s t) n.oi in 
@@ -537,10 +541,12 @@ ensures  { forall t: tensor_id. mem t n.ou -> tensor_is_initialized result t } (
 (* --------------------------------------------------------------------------- *)    
 
 let rec ghost exec_nodes (s: graph_state) (ns: list node) : graph_state = 
-    requires { forall n. mem n ns -> node_is_ready s n }  (* All nodes in the list are ready to be executed *)
+    (* All nodes in the list are ready to be executed *)    
+    requires { forall n. mem n ns -> node_is_ready s n }  
+    (* All outputs of the nodes are initialized *)
     ensures { forall n : node. mem n ns -> 
                 forall t: tensor_id. mem t n.ou -> 
-                    tensor_is_initialized result t } (* All outputs of the nodes are initialized *)
+                    tensor_is_initialized result t } 
     variant { ns }
     match ns with
     | Nil -> s
@@ -551,7 +557,8 @@ let rec ghost exec_nodes (s: graph_state) (ns: list node) : graph_state =
 
 
 let rec filter ( b: node -> bool) (l: list node) : list node =
-    ensures { forall n. mem n result <-> (mem n l /\ b n) }  (* The result contains only nodes that satisfy the predicate b *)
+    (* The result contains only nodes that satisfy predicate b *)
+    ensures { forall n. mem n result <-> (mem n l /\ b n) }  
     variant {l}
     match l with
     | Nil -> Nil
@@ -563,25 +570,31 @@ let rec filter ( b: node -> bool) (l: list node) : list node =
 
 let rec ghost exec_nodes_until_completion (s: graph_state) (ns: list node) : graph_state = 
     (* All the output tensors of the nodes in ns are initialized *)
-    requires { forall n. mem n ns -> node_is_ready s n }  (* All nodes in ns are ready *)
+    requires { forall n. mem n ns -> node_is_ready s n } 
+    (* All outputs of the nodes are initialized *)
     ensures { forall n: node. mem n ns -> 
                 forall t: tensor_id. mem t n.ou -> 
-                    tensor_is_initialized result t } (* All outputs of the nodes are initialized *)
+                    tensor_is_initialized result t } 
     variant {ns}
     let en = filter (fun n -> node_ready s n) ns 
     in 
         let dn = filter (fun n -> not node_ready s n) ns 
         in 
             match en with
-            | Nil -> s  (* No node is ready, return the current state *)
+            | Nil -> 
+                (* No node is ready, return the current state *)
+                s  
             | Cons n _ -> 
+                (* Execute the node and continue with the remaining nodes *)
                 let s' = exec_node s n in
-                    exec_nodes_until_completion s' dn  (* Execute the node and continue with the remaining nodes *)
+                    exec_nodes_until_completion s' dn  
             end
 
 let ghost exec_graph (s: graph_state) (g: graph) : graph_state 
-    requires { forall t. mem t g.gi -> tensor_is_initialized s t }  (* The graph can only be executed if its inputs are initialized *) 
-    ensures { forall t. mem t g.go -> tensor_is_initialized result t  }   (* After execution, all outputs are initialized *)
+    (* [T05a] The graph can only be executed if its inputs are initialized *) 
+    requires { forall t. mem t g.gi -> tensor_is_initialized s t }  
+     (* [TXX] After execution, all output tensors are initialized *)
+    ensures { forall t. mem t g.go -> tensor_is_initialized result t  }  
     = 
         exec_nodes_until_completion s g.gn 
 

@@ -11,7 +11,7 @@ use list.Length
 use list.NthNoOpt
 use map.Const
 use bool.Bool
-
+use set.Set
 
 (* [TODO] Utiliser le module Occ pour compter les occurrences d'un élément dans la Map. *)
 (* [TODO] Qu'est ce qu'une Map vide en Why3 *)
@@ -21,24 +21,19 @@ type value
 
 type tensor_id = int
 
-(* ------------------------------------------------------------------------------------- *)
-(* An abstract map *)
-(* ------------------------------------------------------------------------------------- *)
-type abs_map = Map.map tensor_id (option value)
-
 
 (* ------------------------------------------------------------------------------------- *)
 (* A concrete map, implemented as a list of pairs (tensor_id, option value) *)
 (* ------------------------------------------------------------------------------------- *)
 (* This is a simple list-based implementation of a map, not efficient for large maps. *)
-type lis_map = list (tensor_id, option value)
+type lis_map = list (tensor_id, value)
 
 (* Get an item from the map (spec)*)
 (* Logic functions must be total, so we return None if the tensor is not in the map. *)
 function fget_logic (m: lis_map) (k: tensor_id) : option value =
   match m with
     | Nil -> None
-    | Cons (k', v) xs -> if k = k' then v else fget_logic xs k
+    | Cons (k', v) xs -> if k = k' then Some v else fget_logic xs k
     end 
 
 (* Get an item from the map (imp)*)
@@ -48,12 +43,12 @@ let rec fget (m: lis_map) (k: tensor_id) : option value =
     match m with
     | Nil -> None
     | Cons (k', v) xs -> 
-        if k = k' then v 
+        if k = k' then Some v 
         else fget xs k
     end
 
 (* Set an item in the map (spec) *)
-function fset_logic (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
+function fset_logic (m: lis_map) (k: tensor_id) (v: value) : lis_map =
     match m with
     | Nil -> Cons (k, v) Nil
     | Cons (k', v') xs ->
@@ -62,10 +57,10 @@ function fset_logic (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
     end
 
 (* Set an item in the map (imp) *)
-let rec fset (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
-    ensures { result = fset_logic m k v }  (* The value is correctly set *)
-    ensures{ forall k', v'. mem (k', v') m  /\ k' <> k -> 
-        fget_logic result k' = fget_logic m k' }   (* The other values are not modified *)
+let rec fset (m: lis_map) (k: tensor_id) (v: value) : lis_map =
+    ensures { fget_logic result k = Some v }  (* The value is correctly set *)
+    ensures { forall k', v'. Mem.mem (k', v') m -> 
+        (k' <> k -> fget_logic result k' = fget_logic m k') }   (* The other values are not modified *)
     variant { m }
     match m with
     | Nil -> Cons (k, v) Nil
@@ -82,35 +77,49 @@ let empty_lis_map: lis_map = Nil
 (* The "combined" map that embodies the correspondance between the concrete 
    and abstract maps. *)
 (* ---------------------------------------------------------------------------*)
-predicate is_eq (cmap: lis_map)(amap: abs_map) = 
-    forall t. fget_logic cmap t = Map.get amap t 
 
-type map = {
+type xx = {
+      value : Map.map tensor_id value;
+    }
+    by 
+    {
+     
+        value = fun _ -> any value ;
+    }
+
+
+
+type my_map = {
     cmap : lis_map;
-    ghost amap : Map.map tensor_id (option value);
+    ghost value : Map.map tensor_id value;
+    ghost has_value : Set.set tensor_id;
     } 
     invariant { 
-        is_eq cmap amap  
+        forall t. (fget_logic cmap t = None /\ not has_value t) \/ 
+                  ((fget_logic cmap t = Some (Map.get value t)) /\ has_value t)
     }
     by 
     {
         cmap = Nil;
-        amap = fun _ -> None
+        value = fun _ -> None;
+        has_value = Set.empty;
     }
 
+
 (* An empty map *)
-let empty_map = { cmap = Nil ; amap = fun _ -> None }
+let empty_my_map = {
+        cmap = Nil;
+        value = fun _ -> None;
+        not_none = Set.empty;
+}
+
     
-
 (* Set an item in the map *)
-let set (m : map) (t: tensor_id) (v: option value) : map = 
-    ensures { get m.amap t = get result.amap t } 
-    let s : map = {
+let my_map_set (m : my_map) (t: tensor_id) (v: value) : my_map = 
+    {
         cmap = fset m.cmap t v;
-        amap = Map.set m.amap t v 
-    } in 
-            
-
-    s
+        value = Map.set (t v) m.value;
+        is_set = Set.add t   
+    }
 
 end

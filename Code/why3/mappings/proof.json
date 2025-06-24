@@ -5,11 +5,11 @@
   ],
   "proofs": {
     "Graph": {
-      "empty_my_map": null,
+      "empty_map": { "prover": "alt-ergo@2.6.1", "time": 0.017 },
       "fget": { "prover": "alt-ergo@2.6.1", "time": 0.028 },
       "fset": { "prover": "alt-ergo@2.6.1", "time": 0.036 },
-      "my_map": null,
-      "my_map_set": null
+      "map": { "prover": "alt-ergo@2.6.1", "time": 0.011 },
+      "set": null
     }
   }
 }
