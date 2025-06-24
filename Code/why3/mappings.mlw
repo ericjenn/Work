@@ -1,0 +1,111 @@
+module Graph
+
+use int.Int
+use list.List
+use list.Map
+use option.Option
+use map.Map
+use list.Mem
+use list.FoldLeft
+use list.Length
+use list.NthNoOpt
+use map.Const
+use bool.Bool
+
+
+(* [TODO] Utiliser le module Occ pour compter les occurrences d'un élément dans la Map. *)
+(* [TODO] Qu'est ce qu'une Map vide en Why3 *)
+
+
+type value
+
+type tensor_id = int
+
+(* ------------------------------------------------------------------------------------- *)
+(* An abstract map *)
+(* ------------------------------------------------------------------------------------- *)
+type abs_map = Map.map tensor_id (option value)
+
+(* An empty map return None for any tensor_id. *)
+let ghost empty_map : abs_map = Const.const None
+
+
+(* ------------------------------------------------------------------------------------- *)
+(* A concrete map, implemented as a list of pairs (tensor_id, option value) *)
+(* ------------------------------------------------------------------------------------- *)
+(* This is a simple list-based implementation of a map, not efficient for large maps. *)
+type lis_map = list (tensor_id, option value)
+
+(* Get an item from the map (spec)*)
+(* Logic functions must be total, so we return None if the tensor is not in the map. *)
+function fget_logic (m: lis_map) (k: tensor_id) : option value =
+  match m with
+    | Nil -> None
+    | Cons (k', v) xs -> if k = k' then v else fget_logic xs k
+    end 
+
+(* Get an item from the map (imp)*)
+let rec fget (m: lis_map) (k: tensor_id) : option value =
+    ensures { result = fget_logic m k}
+    variant { m }
+    match m with
+    | Nil -> None
+    | Cons (k', v) xs -> 
+        if k = k' then v 
+        else fget xs k
+    end
+
+(* Set an item in the map (spec) *)
+function fset_logic (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
+    match m with
+    | Nil -> Cons (k, v) Nil
+    | Cons (k', v') xs ->
+        if k = k' then Cons (k, v) xs
+        else Cons (k', v') (fset_logic xs k v)
+    end
+
+(* Set an item in the map (imp) *)
+let rec fset (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
+    ensures { result = fset_logic m k v }  (* The value is correctly set *)
+    ensures{ forall k', v'. mem (k', v') m  /\ k' <> k -> 
+        fget_logic result k' = fget_logic m k' }   (* The other values are not modified *)
+    variant { m }
+    match m with
+    | Nil -> Cons (k, v) Nil
+    | Cons (k', v') tl ->
+        if k = k' then Cons (k, v) tl
+        else Cons (k', v') (fset tl k v)
+    end
+
+(* An empty lis_map *)
+let empty_lis_map: lis_map = Nil
+
+
+(* ---------------------------------------------------------------------------*)
+(* The "combined" map that embodies the correspondance between the concrete 
+   and abstract maps. *)
+(* ---------------------------------------------------------------------------*)
+predicate is_eq (cmap: lis_map)(amap: abs_map) = 
+    forall t. fget_logic cmap t = Map.get amap t 
+
+type my_map = {
+    cmap : lis_map;
+    ghost amap : Map.map tensor_id (option value);
+    } 
+    invariant { 
+        is_eq cmap amap  
+    }
+
+
+(* An empty map *)
+let empty_my_map = { cmap = empty_lis_map ; amap = empty_map }
+    
+(* Set an item in the map *)
+let my_map_set (m : my_map) (t: tensor_id) (v: option value) : my_map = 
+    {
+        cmap = fset m.cmap t v;
+        amap = Map.set m.amap t v 
+    }
+
+  
+end

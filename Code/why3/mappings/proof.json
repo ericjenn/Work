@@ -1,0 +1,15 @@
+{
+  "profile": [
+    { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 },
+    { "prover": "cvc4@1.6", "size": 45, "time": 0.503 }
+  ],
+  "proofs": {
+    "Graph": {
+      "empty_my_map": null,
+      "fget": { "prover": "alt-ergo@2.6.1", "time": 0.028 },
+      "fset": { "prover": "alt-ergo@2.6.1", "time": 0.036 },
+      "my_map": null,
+      "my_map_set": null
+    }
+  }
+}
