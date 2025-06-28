@@ -1,0 +1,103 @@
+{
+  "profile": [
+    { "prover": "alt-ergo@2.6.1", "size": 17, "time": 0.515 },
+    { "prover": "cvc4@1.6", "size": 45, "time": 0.503 }
+  ],
+  "proofs": {
+    "Graph": {
+      "all_node_with_one_output_ko": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.051
+      },
+      "all_node_with_one_output_ok": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.026
+      },
+      "all_operator_ins_and_outs_ko": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.015
+      },
+      "all_operator_ins_and_outs_ok": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.028
+      },
+      "are_initialized": { "prover": "alt-ergo@2.6.1", "time": 0.035 },
+      "assign_list": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.6.1", "time": 0.017 },
+          { "prover": "alt-ergo@2.6.1", "time": 0.02 },
+          { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.1", "time": 0.015 }, null
+            ]
+          }
+        ]
+      },
+      "empty_my_map": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "equivalence_index_counting": {
+        "tactic": "split_vc",
+        "children": [
+          null,
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.1", "time": 0.019 },
+              {
+                "tactic": "split_vc",
+                "children": [
+                  { "prover": "alt-ergo@2.6.1", "time": 0.018 }, null
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "eval_operator": { "prover": "alt-ergo@2.6.1", "time": 0.022 },
+      "fget": { "prover": "alt-ergo@2.6.1", "time": 0.026 },
+      "fold_left2": { "prover": "alt-ergo@2.6.1", "time": 0.023 },
+      "fset": { "prover": "alt-ergo@2.6.1", "time": 0.042 },
+      "get_after_set": { "prover": "alt-ergo@2.6.1", "time": 0.036 },
+      "graph_ins_are_node_ins_test_ko": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.283
+      },
+      "graph_ins_are_node_ins_test_ok": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.021
+      },
+      "graph_ins_outs_are_tensors_test_ko": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.24
+      },
+      "graph_ins_outs_are_tensors_test_ok": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.039
+      },
+      "graph_outs_are_node_outs_test_ko": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.189
+      },
+      "graph_outs_are_node_outs_test_ok": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.023
+      },
+      "is_initialized": { "prover": "alt-ergo@2.6.1", "time": 0.025 },
+      "make_list": { "prover": "alt-ergo@2.6.1", "time": 0.021 },
+      "my_map": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "my_map_set": { "prover": "alt-ergo@2.6.1", "time": 0.013 },
+      "no_dangling_tensor_ko_1": { "prover": "alt-ergo@2.6.1", "time": 1.2 },
+      "no_dangling_tensor_ko_2": {
+        "prover": "alt-ergo@2.6.1",
+        "time": 0.873
+      },
+      "no_dangling_tensor_ok": { "prover": "alt-ergo@2.6.1", "time": 0.157 },
+      "node_ready": { "prover": "alt-ergo@2.6.1", "time": 0.018 },
+      "operator_one_output_ko": { "prover": "alt-ergo@2.6.1", "time": 0.011 },
+      "operator_one_output_ok": { "prover": "alt-ergo@2.6.1", "time": 0.015 },
+      "zip": { "prover": "alt-ergo@2.6.1", "time": 0.021 }
+    }
+  }
+}

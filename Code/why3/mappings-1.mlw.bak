@@ -12,8 +12,7 @@ use list.NthNoOpt
 use map.Const
 use bool.Bool
 use set.Set
-use list.Nth
-
+use list.NumOcc
 
 (* [TODO] Utiliser le module Occ pour compter les occurrences d'un élément dans la Map. *)
 (* [TODO] Qu'est ce qu'une Map vide en Why3 *)
@@ -304,7 +303,6 @@ predicate no_dangling_tensor (g: graph) =
     Mem.mem t g.gt ->
       Mem.mem t g.gi \/ tensor_output_exactly_one_node g t
 
-
 (* Specification tests *)
 goal no_dangling_tensor_ok: 
     let g : graph = {
@@ -543,50 +541,29 @@ ensures { length result = length op.opo }
 (* Graph execution *)
 (* =========================================================================== *)
 
-(* The two functions could be merged into one, but weep it as it to make it more general... *)
+
 function project (l : list (tensor_id, value)) : list tensor_id =
     match l with
     | Nil -> Nil
     | Cons (t, _) xs -> Cons t (project xs)
     end
 
-
-predicate t_appears_at_most_once (t: tensor_id) (l: list (tensor_id, value)) =
-  forall i j v1 v2.
-    Nth.nth i l = Some (t, v1) ->
-    Nth.nth j l = Some (t, v2) ->
-    i = j
-
-
-use list.NumOcc
-(* This lemma states that if a tensor appears once in the list, then it appears at most once *)
-(* [TODO] This lemma is not proved automatically... *)
-
-let rec lemma equivalence_index_counting (l: list (tensor_id, value)) (t: tensor_id)
-  ensures { t_appears_at_most_once t l -> NumOcc.num_occ t (project l)  <= 1 }
-= match l with
-  | Nil -> ()
-  | Cons x xs ->
-    match x with
-    | (t', _) ->
-      if t = t' then
-        assert { NumOcc.num_occ t (project xs)  = 0 }
-      else
-        equivalence_index_counting xs t
+function nb_occ (l: list tensor_id) (t: tensor_id) : int =
+    match l with
+    | Nil -> 0
+    | Cons x xs -> if x = t then 1 + nb_occ xs t else nb_occ xs t
     end
-  end
 
-
-(*
-lev rec lemma xxxx (l: list (tensor_id, value) (t : tensor_id) 
-ensures { t_appears_once t l }
-*)
 
 let rec assign_list (s: graph_state) (l: list (tensor_id, value)) : graph_state
     (* A tensor shall only appear once in the state *)
-
+    requires { forall t, v. Mem.mem (t, v) s.cmap -> 
+        exists t', v'. Mem.mem (t', v') s.cmap /\ t <> t' \/ v = v' }
     (* A tensor shall only appear once in an assignment *)         
-    requires { forall t: tensor_id. t_appears_at_most_once t l }  
+    requires { forall t, v. Mem.mem (t, v) l -> 
+        exists t', v'. Mem.mem (t', v') l /\ t <> t' \/ v = v' } 
+    (* Another way to express the same property... *)
+    requires { forall t: tensor_id. nb_occ (project l) t <= 1} 
 
     (* The assignment is correct  *)        
     ensures { forall t, v . Mem.mem (t, v) l -> 
@@ -598,13 +575,11 @@ let rec assign_list (s: graph_state) (l: list (tensor_id, value)) : graph_state
     | Cons (t, v) xs ->
         (* Assign the value and continue with the rest of the assignment list *)
         let s' = my_map_set s t v in
-            (* Tensor t is correctly assigned *)
-            assert {  my_map_get_logic s' t = Some v } ;   
-            assume { NumOcc.num_occ t (project xs) = 0  } ;   
-            assume { forall t'. t_appears_at_most_once t' xs } ;
-            let s'' = assign_list s' xs in 
-                assume { forall t'', v'' . Mem.mem (t'', v'') xs -> my_map_get_logic s' t'' = Some v'' } ;
-                s''  
+            assert {  my_map_get_logic s' t = Some v } ;
+            assert {  forall t',v'. Mem.mem (t', v') xs -> t' <> t};
+            assume {  forall t',v'. Mem.mem (t',v') xs -> 
+                my_map_get_logic s' t' = Some v'  } ;
+            assign_list s' xs  
     end
 
 
