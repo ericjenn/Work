@@ -104,6 +104,7 @@ let empty_map = { cmap = Nil ; amap = fun _ -> None }
 
 (* Set an item in the map *)
 let set (m : map) (t: tensor_id) (v: option value) : map = 
+    ensures { get m.amap t = get result.amap t } 
     let s : map = {
         cmap = fset m.cmap t v;
         amap = Map.set m.amap t v 

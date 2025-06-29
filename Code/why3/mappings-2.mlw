@@ -28,14 +28,14 @@ type tensor_id = int
 (* A concrete map, implemented as a list of pairs (tensor_id, option value) *)
 (* ------------------------------------------------------------------------------------- *)
 (* This is a simple list-based implementation of a map, not efficient for large maps. *)
-type lis_map = list (tensor_id, value)
+type lis_map = list (tensor_id, option value)
 
 (* Get an item from the map (spec)*)
-(* Logic functions must be total, so we return None if the tensor is not in the map. *)
+(* We return None if the tensor is not in the map. *)
 function fget_logic (m: lis_map) (k: tensor_id) : option value =
   match m with
     | Nil -> None
-    | Cons (k', v) xs -> if k = k' then Some v else fget_logic xs k
+    | Cons (k', v) xs -> if k = k' then v else fget_logic xs k
     end 
 
 (* Get an item from the map (imp)*)
@@ -45,12 +45,12 @@ let rec fget (m: lis_map) (k: tensor_id) : option value =
     match m with
     | Nil -> None
     | Cons (k', v) xs -> 
-        if k = k' then Some v 
+        if k = k' then v 
         else fget xs k
     end
 
 (* Set an item in the map (spec) *)
-function fset_logic (m: lis_map) (k: tensor_id) (v: value) : lis_map =
+function fset_logic (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
     match m with
     | Nil -> Cons (k, v) Nil
     | Cons (k', v') xs ->
@@ -59,8 +59,8 @@ function fset_logic (m: lis_map) (k: tensor_id) (v: value) : lis_map =
     end
 
 (* Set an item in the map (imp) *)
-let rec fset (m: lis_map) (k: tensor_id) (v: value) : lis_map =
-    ensures { fget_logic result k = Some v }  (* The value is correctly set *)
+let rec fset (m: lis_map) (k: tensor_id) (v: option value) : lis_map =
+    ensures { fget_logic result k = v }  (* The value is correctly set *)
     ensures { forall k', v'. Mem.mem (k', v') m -> 
         (k' <> k -> fget_logic result k' = fget_logic m k') }   (* The other values are not modified *)
     variant { m }
@@ -79,7 +79,7 @@ let empty_lis_map: lis_map = Nil
 
 
   let rec lemma get_after_set  (m: lis_map)
-    ensures { forall t,v. fget_logic (fset_logic m t v) t = Some v }
+    ensures { forall t,v. fget_logic (fset_logic m t v) t = v }
     (*proof*)
     = match m with
       | Nil -> ()
@@ -121,12 +121,22 @@ let empty_my_map = {
 
     
 (* Set an item in the map *)
-let my_map_set (m : my_map) (t: tensor_id) (v: value) : my_map = 
-ensures { fget_logic result.cmap t = Some v }  (* The value is correctly set *)
+let my_map_set (m : my_map) (t: tensor_id) (v: option value) : my_map = 
+ensures { fget_logic result.cmap t =  v }  (* The value is correctly set *)
     {
         cmap = fset m.cmap t v;
-        value = Map.set m.value t v;
-        has_value = Set.add t m.has_value   
+        value =  
+            match v with
+            | Some v' -> Map.set m.value t v'
+            | None -> m.value
+        end;
+        (* If the value is set, we add the tensor to the set of tensors with a value *)
+        (* If the value is None, we remove the tensor from the set of tensors with a value *)
+        has_value = 
+            match v with
+            | Some _ -> Set.add t m.has_value
+            | None -> Set.remove t m.has_value
+        end;
     }
     
 
@@ -189,7 +199,20 @@ type node = {
     oi: list tensor_id; (* Input tensors, position-wise *)
     ou: list tensor_id; (* Output tensors, position-wise *)
 }
+(*
+[TODO] I cannot use the invariant because, if so, I cannot use {} to construct elements of type node. 
 
+    invariant { 
+        length oi = length ope.opi /\
+        length ou = length ope.opo
+    }
+    by 
+    {
+        ope= { name = ""; opi = Nil; opo = Nil };
+        oi = Nil;
+        ou = Nil;
+    }
+*)
 
 (* A graph is a list of tensors and nodes + a list of input and output tensors *)
 (* [TXX] *)
@@ -200,7 +223,17 @@ type graph = {
     gn: list node;         (* graph nodes *)
 }
 
+constant add_op : operator = {
+    name = "Add";
+    opi = Cons (Cons 1 Nil) (Cons (Cons 1 Nil) Nil); (* Two inputs of shape [1] *)
+    opo = Cons (Cons 1 Nil) Nil; (* One output of shape [1] *)
+}
 
+constant sub_op : operator = {
+    name = "Sub";
+    opi = Cons (Cons 1 Nil) (Cons (Cons 1 Nil) Nil); (* Two inputs of shape [1] *)
+    opo = Cons (Cons 1 Nil) Nil; (* One output of shape [1] *)
+}
 
 (* ------------------------------------------------------------------------- *)    
 (* [TXX] In a graph, a node provide all operators inputs and ouputs  *)
@@ -211,17 +244,18 @@ predicate all_operator_ins_and_outs (g: graph) =
 
 (* Specification tests *)
 goal all_operator_ins_and_outs_ok :
+let add_op : operator = {
+    name = "Add";
+    opi = Cons (Cons 1 Nil) (Cons (Cons 1 Nil) Nil); (* Two inputs of shape [1] *)
+    opo = Cons (Cons 1 Nil) Nil; (* One output of shape [1] *)
+} in
     let g : graph = {
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { 
-                ope={ 
-                    name="Add" ; 
-                    opi= Cons (Cons 1 Nil) (Cons (Cons 1 Nil) Nil)  ; 
-                    opo= (Cons (Cons 1 Nil) Nil)  }; 
-                oi=Cons 1 (Cons 2 Nil); 
-                ou= (Cons 4 Nil)} Nil;
+        gn = Cons { ope = add_op; 
+                    oi = Cons 1 (Cons 2 Nil); 
+                    ou = Cons 4 Nil } Nil;
     } in 
     all_operator_ins_and_outs g
 
@@ -231,12 +265,9 @@ goal all_operator_ins_and_outs_ko :
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
         gn = Cons { 
-                ope={ 
-                    name="Add" ; 
-                    opi= Cons (Cons 1 Nil) (Cons (Cons 1 Nil) Nil)  ; 
-                    opo= (Cons (Cons 1 Nil) Nil)  }; 
+                ope= add_op;
                 oi=Cons 1 (Cons 2 Nil); 
-                ou= Nil} Nil; (* <= the is no output *)
+                ou= Nil} Nil; (* <= there is no output *)
     } in 
     not all_operator_ins_and_outs g
 
@@ -253,8 +284,8 @@ goal all_node_with_one_output_ok:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)}
-            (Cons { ope={ name="Sub" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 8 Nil)} Nil);
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)}
+            (Cons { ope=sub_op; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 8 Nil)} Nil);
     } in 
     all_node_with_one_output g
 
@@ -264,8 +295,8 @@ goal all_node_with_one_output_ko:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou= Nil} (* This operator has no output *)
-            (Cons { ope={ name="Sub" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 8 Nil)} Nil);
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou= Nil} (* This operator has no output *)
+            (Cons { ope=sub_op; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 8 Nil)} Nil);
     } in 
     not all_node_with_one_output g
 
@@ -286,6 +317,19 @@ predicate tensor_is_unique_output (g: graph) =
 
 I have replaced them with a simple counting.
 *) 
+
+(* Returns all elements of the list that satisfy the predicate b *)
+let rec filter ( b: node -> bool) (l: list node) : list node =
+    (* The result contains only nodes that satisfy predicate b *)
+    ensures { forall n. Mem.mem n result <-> (Mem.mem n l /\ b n) }  
+    variant {l}
+    match l with
+    | Nil -> Nil
+    | Cons x xs ->
+        if b x then Cons x (filter b xs)
+        else filter b xs
+    end
+
 
 function filter ( b: node -> bool) (l: list node) : list node =
     match l with
@@ -317,19 +361,19 @@ goal no_dangling_tensor_ok:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)}
-            (Cons { ope={ name="Sub" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 8 Nil)} Nil);
+        gn = Cons { ope= add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 Nil}
+            (Cons { ope=sub_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 4  Nil} Nil);
     } in 
     no_dangling_tensor g
 
 
-goal no_dangling_tensor_ko_1: (* Tensor 4 is the output of two nodes *)
+goal no_dangling_tensor_ko_1: (* Tensor 3 is the output of two nodes *)
     let g : graph = {
         gi = Cons 1 (Cons 2 Nil);
-        go = Cons 3 (Cons 4 Nil);
+        go = Cons 3 Nil;
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)}
-            (Cons { ope={ name="Sub" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 6 Nil); ou=Cons 7 (Cons 4 Nil)} Nil);
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 Nil}
+            (Cons { ope=sub_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 Nil} Nil);
     } in 
     not no_dangling_tensor g
 
@@ -338,8 +382,8 @@ goal no_dangling_tensor_ko_2: (* Tensor 4 is dangling *)
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3  Nil}
-            (Cons { ope={ name="Sub" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 6 Nil); ou=Cons 7  Nil} Nil);
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3  Nil}
+            (Cons { ope=sub_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3  Nil} Nil);
     } in 
     not no_dangling_tensor g
 
@@ -359,7 +403,7 @@ goal graph_ins_are_node_ins_test_ok:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
     } in 
     graph_ins_are_node_ins g
 
@@ -368,7 +412,7 @@ goal graph_ins_are_node_ins_test_ko:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 5 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
+        gn = Cons { ope=add_op; oi=Cons 5 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
     } in 
     not graph_ins_are_node_ins g
 
@@ -385,7 +429,7 @@ goal graph_outs_are_node_outs_test_ok:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
     } in 
     graph_outs_are_node_outs g
 
@@ -394,7 +438,7 @@ goal graph_outs_are_node_outs_test_ko:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
     } in 
     not graph_outs_are_node_outs g
 
@@ -411,7 +455,7 @@ goal graph_ins_outs_are_tensors_test_ok:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil);
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou=Cons 3 (Cons 4 Nil)} Nil;
     } in 
     graph_ins_outs_are_tensors g
 
@@ -420,7 +464,7 @@ goal graph_ins_outs_are_tensors_test_ko:
         gi = Cons 1 (Cons 2 Nil);
         go = Cons 3 (Cons 4 Nil); (* <= Output 4 is not in the tensor set *)
         gt = Cons 1 (Cons 2 (Cons 3 (Cons 5 Nil)));
-        gn = Cons { ope={ name="Add" ; opi=Nil; opo=Nil }; oi=Cons 1 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
+        gn = Cons { ope=add_op; oi=Cons 1 (Cons 2 Nil); ou= Cons 3 Nil } Nil;
     } in 
     not graph_ins_outs_are_tensors g
 
@@ -559,14 +603,14 @@ let eval_operator (op: operator) (inputs: list (option value)) : list (option va
 (* =========================================================================== *)
 
 (* The two functions could be merged into one, but weep it as it to make it more general... *)
-function project (l : list (tensor_id, value)) : list tensor_id =
+function project (l : lis_map) : list tensor_id =
     match l with
     | Nil -> Nil
     | Cons (t, _) xs -> Cons t (project xs)
     end
 
 
-predicate t_appears_at_most_once (t: tensor_id) (l: list (tensor_id, value)) =
+predicate t_appears_at_most_once (t: tensor_id) (l: lis_map) =
   forall i j v1 v2.
     Nth.nth i l = Some (t, v1) ->
     Nth.nth j l = Some (t, v2) ->
@@ -577,7 +621,7 @@ use list.NumOcc
 (* This lemma states that if a tensor appears once in the list, then it appears at most once *)
 (* [TODO] This lemma is not proved automatically... *)
 
-let rec lemma equivalence_index_counting (l: list (tensor_id, value)) (t: tensor_id)
+let rec lemma equivalence_index_counting (l: lis_map) (t: tensor_id)
   ensures { t_appears_at_most_once t l -> NumOcc.num_occ t (project l)  <= 1 }
 = match l with
   | Nil -> ()
@@ -597,7 +641,7 @@ lev rec lemma xxxx (l: list (tensor_id, value) (t : tensor_id)
 ensures { t_appears_once t l }
 *)
 
-let rec assign_list (s: graph_state) (l: list (tensor_id, value)) : graph_state
+let rec assign_list (s: graph_state) (l: lis_map) : graph_state
     (* A tensor shall only appear once in the state *)
 
     (* A tensor shall only appear once in an assignment *)         
@@ -605,7 +649,7 @@ let rec assign_list (s: graph_state) (l: list (tensor_id, value)) : graph_state
 
     (* The assignment is correct  *)        
     ensures { forall t, v . Mem.mem (t, v) l -> 
-        my_map_get_logic result t = Some v } 
+        my_map_get_logic result t =  v } 
     variant { l }
 =
     match l with
@@ -614,11 +658,11 @@ let rec assign_list (s: graph_state) (l: list (tensor_id, value)) : graph_state
         (* Assign the value and continue with the rest of the assignment list *)
         let s' = my_map_set s t v in
             (* Tensor t is correctly assigned *)
-            assert {  my_map_get_logic s' t = Some v } ;   
+            assert {  my_map_get_logic s' t =  v } ;   
             assume { NumOcc.num_occ t (project xs) = 0  } ;   
             assume { forall t'. t_appears_at_most_once t' xs } ;
             let s'' = assign_list s' xs in 
-                assume { forall t'', v'' . Mem.mem (t'', v'') xs -> my_map_get_logic s' t'' = Some v'' } ;
+                assume { forall t'', v'' . Mem.mem (t'', v'') xs -> my_map_get_logic s' t'' =  v'' } ;
                 s''  
     end
 
@@ -639,14 +683,14 @@ let rec zip (l1: list tensor_id)(l2: list (option value)) : list (tensor_id, opt
 (* Execute one node                                                            *)
 (* --------------------------------------------------------------------------- *)    
 let exec_node (s: graph_state) (n: node) : graph_state
-    (* [T05a] The node must be ready to be executed *)
+    (* [T05a] The node is ready to be executed *)
     requires { node_is_ready s n }               
-    (* [T05a] The number of inputs must match the number of operator's inputs *)   
+    (* [T05a] The number of inputs matches the number of operator's inputs *)   
     requires { length n.oi = length n.ope.opi }  
     (* [T03b] The number of outputs must match the number of operator's outputs *)
     requires { length n.ou = length n.ope.opo }  
     (* After execution, all output tensors are set *)
-    ensures  { forall t: tensor_id. mem t n.ou -> tensor_is_initialized result t } 
+    ensures  { forall t: tensor_id. Mem.mem t n.ou -> tensor_is_initialized result t } 
 =
     (* the values of tensors that are inputs to a node *)
     let inputs = apply (fun t -> my_map_get s t) n.oi in
@@ -680,24 +724,10 @@ let rec exec_nodes (s: graph_state) (ns: list node) : graph_state =
     end
 
 
-let rec filter ( b: node -> bool) (l: list node) : list node =
-    (* The result contains only nodes that satisfy predicate b *)
-    ensures { forall n. Mem.mem n result <-> (Mem.mem n l /\ b n) }  
-    variant {l}
-    match l with
-    | Nil -> Nil
-    | Cons x xs ->
-        if b x then Cons x (filter b xs)
-        else filter b xs
-    end
-
-
 let rec exec_nodes_until_completion (s: graph_state) (ns: list node) : graph_state = 
-    (* All the output tensors of the nodes in ns are initialized *)
-    requires { forall n. Mem.mem n ns -> node_is_ready s n } 
     (* All outputs of the nodes are initialized *)
     ensures { forall n: node. Mem.mem n ns -> 
-                forall t: tensor_id. mem t n.ou -> 
+                forall t: tensor_id. Mem.mem t n.ou -> 
                     tensor_is_initialized result t } 
     variant {ns}
     let en = filter (fun n -> node_ready s n) ns 
