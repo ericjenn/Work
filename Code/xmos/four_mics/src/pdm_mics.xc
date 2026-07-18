@@ -1,0 +1,284 @@
+#include <platform.h>
+#include <xs1.h>
+#include <math.h>
+#include "i2s.h"
+
+/* ================================
+ * Audio parameters
+ * ================================ */
+#define SAMPLE_FREQUENCY       (48000)
+#define MASTER_CLOCK_FREQUENCY (12288000)  // 48kHz * 256
+#define DATA_BITS              (32)
+
+/* PDM parameters - Standard MEMS microphone configuration */
+#define PDM_FREQ               (3072000)    // 3.072 MHz (standard for PDM MEMS mics)
+#define DECIMATION_FACTOR      (64)         // 3.072MHz / 64 = 48kHz
+
+/* Beep parameters (kept for reference) */
+#define BEEP_FREQ              (1000)        
+#define BEEP_DURATION_MS       (2000)       
+#define BEEP_SAMPLES           ((SAMPLE_FREQUENCY * BEEP_DURATION_MS) / 1000)
+#define AMPLITUDE              (1 << 27)    
+
+/* Sine LUT parameters */
+#define SINE_LUT_BITS          (9) 
+#define SINE_LUT_SIZE          (1 << SINE_LUT_BITS)
+#define PHASE_ACC_SHIFT        (32 - SINE_LUT_BITS)
+
+static int32_t sine_lut[SINE_LUT_SIZE];
+
+void init_sine_lut(void) {
+    for (int i = 0; i < SINE_LUT_SIZE; i++) {
+        float theta = (2.0f * 3.14159265f * (float)i) / (float)SINE_LUT_SIZE;
+        sine_lut[i] = (int32_t)(sinf(theta) * (float)AMPLITUDE);
+    }
+}
+
+#define BLINK_PERIOD_TICKS  (10000000)  // 100 ms at 100 MHz
+
+// LEDs 4-bit port on tile 0
+on tile[0]: out port p_led = XS1_PORT_4C;
+
+//----------------------------------
+// Blink external LEDs
+//----------------------------------
+void blink_leds (void) {
+    timer t;
+    unsigned time;
+    uint8_t led=0b0001;
+    uint8_t left=1;
+    t :> time;
+
+    while (1) {
+        time += BLINK_PERIOD_TICKS;
+        t when timerafter(time) :> void;
+        p_led <: led;
+        if (left) 
+            led<<=1;
+        else
+            led>>=1;
+        if ((led==0b0001 || led==0b1000)) 
+            left = !left;
+    }
+    return;      
+}
+
+
+/* ================================
+ * Simple PDM to PCM converter
+ * Uses CIC filter for decimation
+ * ================================ */
+
+// Simple 3rd order CIC filter
+typedef struct {
+    int64_t integrator[3];
+    int64_t comb[3];
+    int64_t comb_delay[3];
+    unsigned decimation_count;
+} cic_filter_t;
+
+void cic_filter_init(cic_filter_t *filter) {
+    for (int i = 0; i < 3; i++) {
+        filter->integrator[i] = 0;
+        filter->comb[i] = 0;
+        filter->comb_delay[i] = 0;
+    }
+    filter->decimation_count = 0;
+}
+
+/**
+ * PROPER CIC FILTER IMPLEMENTATION
+ * The comb stage acts as a differentiator which removes DC
+ * Integrators should NOT be reset!
+ */
+int32_t cic_filter_process(cic_filter_t *filter, int32_t pdm_bit, int *has_output) {
+    // Convert 0/1 to -1/+1
+    int32_t sample = pdm_bit ? 1 : -1;
+    
+    // Integrator stage - accumulate
+    filter->integrator[0] += sample;
+    filter->integrator[1] += filter->integrator[0];
+    filter->integrator[2] += filter->integrator[1];
+    
+    filter->decimation_count++;
+    
+    // Decimate - output sample when we've accumulated enough
+    if (filter->decimation_count >= DECIMATION_FACTOR) {
+        filter->decimation_count = 0;
+        
+        // Take snapshot of final integrator
+        int64_t output = filter->integrator[2];
+        
+        // Comb/differentiator stage - this removes DC automatically
+        for (int i = 0; i < 3; i++) {
+            int64_t temp = output;
+            output = output - filter->comb_delay[i];
+            filter->comb_delay[i] = temp;
+        }
+        
+        // Scale to use more of 32-bit range
+        // At 3.072 MHz with decimation 64, we need less gain than at lower rates
+        int32_t final_sample = (int32_t)(output << 10);
+        
+        *has_output = 1;
+        return final_sample;
+    }
+    
+    *has_output = 0;
+    return 0;
+}
+
+
+/* ================================
+ * PDM capture with proper gain compensation
+ * ================================ */
+void pdm_capture(in buffered port:32 p_pdm_data, streaming chanend c_to_dac) {
+    cic_filter_t filter;
+    cic_filter_init(&filter);
+    
+    unsigned sample_count = 0;
+    unsigned warmup_samples = 200;  // Short warmup
+    
+    printf("PDM Capture: Starting...\n");
+    printf("PDM Clock: %d Hz\n", PDM_FREQ);
+    printf("Output Rate: %d Hz\n", PDM_FREQ / DECIMATION_FACTOR);
+    printf("CIC Decimation: %d\n", DECIMATION_FACTOR);
+    printf("Warming up...\n\n");
+    
+    while (1) {
+        uint32_t raw_data;
+        p_pdm_data :> raw_data;
+        
+        // Process the 8 time-steps
+        for (int i = 0; i < 8; i++) {
+            int32_t pdm_bit = (raw_data >> (i * 4)) & 1;
+            
+            int has_output = 0;
+            int32_t pcm_out = cic_filter_process(&filter, pdm_bit, &has_output);
+            
+            if (has_output) {
+                sample_count++;
+                
+                if (sample_count <= warmup_samples) {
+                    if (sample_count == warmup_samples) {
+                        printf("Warmup complete! Now outputting audio.\n\n");
+                    }
+                    continue;
+                }
+                
+                // Send directly to DAC
+                c_to_dac <: pcm_out;
+                
+            }
+        }
+    }
+}
+
+
+/* ================================
+ * I2S DAC application - Mic passthrough
+ * ================================ */
+[[distributable]]
+void dac_server(server i2s_frame_callback_if i_i2s, streaming chanend c_mic_data)
+{
+    int32_t current_mic_sample = 0;
+
+    printf("DAC server: Starting (48kHz mic -> 48kHz DAC)...\n");
+
+    while (1) {
+        select {
+            case i_i2s.init(i2s_config_t &?i2s_config,
+                            tdm_config_t &?tdm_config):
+                i2s_config.mclk_bclk_ratio =
+                    (MASTER_CLOCK_FREQUENCY /
+                    (SAMPLE_FREQUENCY * 2 * DATA_BITS));
+                i2s_config.mode = I2S_MODE_LEFT_JUSTIFIED;
+                break;
+
+            case i_i2s.restart_check() -> i2s_restart_t restart:
+                restart = I2S_NO_RESTART;
+                break;
+
+            case i_i2s.receive(size_t num_in, int32_t samples[num_in]):
+                break;
+
+            case i_i2s.send(size_t num_out, int32_t samples[num_out]):
+                // Get mic sample (48kHz -> 48kHz, no upsampling needed!)
+                select {
+                    case c_mic_data :> current_mic_sample:
+                        break;
+                    default:
+                        break;
+                }
+                
+                for (int i = 0; i < num_out; i++) {
+                    samples[i] = current_mic_sample;
+                }
+                break;
+        }
+    }
+}
+
+/* ================================
+ * I2S DAC ports on TILE 1
+ * ================================ */
+on tile[1]: out buffered port:32 p_dout[1] = {XS1_PORT_1A};
+on tile[1]: out port p_bclk = XS1_PORT_1C;
+on tile[1]: out buffered port:32 p_lrclk = XS1_PORT_1B;
+on tile[1]: clock bclk = XS1_CLKBLK_1;
+
+/* ================================
+ * PDM ports on TILE 0
+ * ================================ */
+on tile[0]: in buffered port:32 p_pdm_data = XS1_PORT_4D;
+on tile[0]: out buffered port:32 p_pdm_clk = XS1_PORT_1D;
+on tile[0]: clock pdm_clk = XS1_CLKBLK_2;
+
+
+/* ================================
+ * Main
+ * ================================ */
+int main(void)
+{
+    i2s_frame_callback_if i_i2s_dac;
+    streaming chan c_pdm_to_dac;
+
+    par {
+        on tile[0]: {
+            printf("\n===========================================\n");
+            printf("PDM MEMS Microphone @ 3.072 MHz\n");
+            printf("===========================================\n");
+            printf("PDM Clock: %d Hz (Standard MEMS frequency)\n", PDM_FREQ);
+            printf("Output: 48 kHz PCM -> DAC @ 48 kHz\n");
+            printf("Ready for real PDM microphone!\n");
+            printf("===========================================\n\n");
+
+            // Configure PDM clock for 3.072 MHz
+            // 100 MHz / 32 = 3.125 MHz (close to 3.072 MHz)
+            configure_clock_rate(pdm_clk, 100, 32);
+            configure_port_clock_output(p_pdm_clk, pdm_clk);
+            configure_in_port(p_pdm_data, pdm_clk);
+            start_clock(pdm_clk);
+
+            par {
+                blink_leds();
+                pdm_capture(p_pdm_data, c_pdm_to_dac);
+            }
+        }
+
+        on tile[1]: {
+            init_sine_lut();
+            configure_clock_ref(bclk, 16);
+            start_clock(bclk);
+
+            par {
+                dac_server(i_i2s_dac, c_pdm_to_dac);
+                i2s_frame_master_external_clock(
+                    i_i2s_dac, p_dout, 1, NULL, 0,
+                    DATA_BITS, p_bclk, p_lrclk, bclk
+                );
+            }
+        }
+    }
+    return 0;
+}

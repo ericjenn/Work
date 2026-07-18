@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Platform SYSTEM "xcore.xsd">
+<Platform Name="XCORE-AI-I2S-X1D">
+
+  <Declarations>
+    <Declaration>XSCOPE</Declaration>
+  </Declarations>
+
+  <Packages>
+    <Package Id="0" Type="XU316-1024-QF60A"/>
+  </Packages>
+
+  <Nodes>
+    <Node Id="0" Type="XCORE-AI">
+      <Tile Id="0" Reference="tile[0]">
+
+        <!-- System clock -->
+        <Port Location="XS1_PORT_1L" Name="PORT_SWCLOCK"/>
+dddd
+        <!-- ========================= -->
+        <!-- I2S OUTPUT PORTS     -->
+        <!-- ========================= -->
+
+        <!-- Bit clock -->
+        <Port Location="XS1_PORT_1C" Name="p_bclk"/>
+
+        <!-- Word select / LRCLK -->
+        <Port Location="XS1_PORT_1B" Name="p_lrclk"/>
+
+        <!-- Serial data out -->
+        <Port Location="XS1_PORT_1A" Name="p_dout"/>
+
+        <!-- (Optional) MCLK if needed -->
+        <!-- <Port Location="XS1_PORT_1D" Name="p_mclk"/> -->
+
+  <!-- PDM -->
+  <Port Location="XS1_PORT_1J" Name="p_pdm_clk"/>
+  <Port Location="XS1_PORT_1I" Name="p_pdm_data"/>
+  
+      </Tile>
+    </Node>
+  </Nodes>
+
+</Platform>

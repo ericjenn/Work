@@ -1,0 +1,14 @@
+This is an example application for the XCommon CMake build system.
+
+To build:
+  cmake -G "Unix Makefiles" -B build
+  xmake -C build
+
+To run on an XK-EVK-XU316 board:
+  xrun --io bin/example.xe
+
+To run on the simulator:
+  xsim bin/example.xe
+
+Expected behaviour on the simulator:
+  "Hello World!" is printed
