@@ -1,0 +1,23 @@
+# Core LangChain stack
+langchain>=0.2.0
+langchain-openai>=0.1.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langgraph>=0.1.0
+
+# OpenAI client
+openai>=1.30.0
+
+# Vector store — FAISS (no pydantic dependency, no chromadb conflict)
+faiss-cpu>=1.7.4
+
+# Document loaders (RAG ingestion)
+pypdf>=4.0.0
+docx2txt>=0.8
+# NOTE: Markdown files are loaded via plain TextLoader (no unstructured needed)
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+rich>=13.0.0
+typer>=0.12.0
